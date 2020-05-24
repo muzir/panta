@@ -1,0 +1,20 @@
+{
+  "name": "panta",
+  "version": "0.1.0",
+  "description": "simple clipboard utility program",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "simple",
+    "clipboard",
+    "electron"
+  ],
+  "author": "muzir",
+  "license": "ISC",
+  "devDependencies": {
+    "electron": "^9.0.0"
+  }
+}
