@@ -16,5 +16,8 @@
   "license": "ISC",
   "devDependencies": {
     "electron": "^9.0.0"
+  },
+  "dependencies": {
+    "clipboardy": "^2.3.0"
   }
 }
