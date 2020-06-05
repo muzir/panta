@@ -16,9 +16,6 @@ function loadItems() {
     });
     const container = document.querySelector('#container');
     container.innerHTML = containerContent;
-    setTimeout(() => {
-        loadItems()
-    }, 200);
 }
 
 function saveValue(param) {
@@ -40,6 +37,7 @@ async function listenClipboardOnChange() {
         console.log('latestCopyValue:' + latestCopyValue)
         console.log('item.value:' + item.value)
         saveValue(latestCopyValue)
+        loadItems();
     }
 }
 
