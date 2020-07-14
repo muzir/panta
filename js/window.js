@@ -5,43 +5,48 @@ const clipboardy = require('clipboardy');
 let items = [];
 
 function loadItems() {
-    let containerContent = '';
     items.forEach((item) => {
-        containerContent = containerContent
-            + '<img class="img-circle media-object pull-left" src="assets/img/iconfinder_document_text.png" width="32"height="32"><div class="media-body"><strong>'
-            + item.dateCreated
-            + '</strong><p>'
-            + item.value
-            + '</p></div>'
+        appendUnderSearchBox(item)
     });
-    const container = document.querySelector('#container');
-    container.innerHTML = containerContent;
 }
 
-function saveValue(param) {
+function appendUnderSearchBox(item) {
+    let containerContent = '<img class="img-circle media-object pull-left" src="assets/img/iconfinder_document_text.png" width="32"height="32"><div class="media-body"><strong>'
+        + item.dateCreated
+        + '</strong><p>'
+        + item.value
+        + '</p></div>'
+    const searchBoxHeader = document.querySelector('#searchBoxHeader');
+    searchBoxHeader.insertAdjacentHTML('afterend', containerContent)
+}
+
+function saveValue(item) {
+    items.push(item)
+}
+
+function createItem(param) {
     const options = { month: "long", day: "numeric", year: "numeric", hour: "numeric", minute: "numeric" };
     let dateCreated = new Intl.DateTimeFormat('utc', options).format(new Date());
-    let item = { dateCreated: dateCreated, value: param }
-    items.push(item)
+    let item = { dateCreated: dateCreated, value: param };
+    return item;
 }
 
 async function listenClipboardOnChange() {
     setTimeout(listenClipboardOnChange, 200)
     let item = items[items.length - 1]
     let latestCopyValue = clipboardy.readSync()
-    if (item == undefined && (latestCopyValue != '' || latestCopyValue != undefined)) {
-        saveValue(latestCopyValue)
-        return
-    }
-    else if (item.value != latestCopyValue) {
-        console.log('latestCopyValue:' + latestCopyValue)
-        console.log('item.value:' + item.value)
-        saveValue(latestCopyValue)
-        loadItems();
+    if (shouldSave(item, latestCopyValue)) {
+        let item = createItem(latestCopyValue);
+        saveValue(item)
+        appendUnderSearchBox(item)
     }
 }
 
 window.onload = () => {
     listenClipboardOnChange();
-    loadItems();
 };
+
+function shouldSave(item, latestCopyValue) {
+    return (item == undefined && (latestCopyValue != '' || latestCopyValue != undefined)) ||
+        (item != undefined && item.value != latestCopyValue);
+}
