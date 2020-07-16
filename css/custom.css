@@ -1,0 +1,22 @@
+ul {
+    display: inline-block;
+    width: auto;
+    padding: 20px;
+}
+
+ul > li {
+    margin: 5px;
+    padding: 10px;
+    cursor: pointer;
+    opacity: 1.0;
+    transition: opacity .2s ease-in-out;
+}
+
+ul > li:hover {
+    opacity: 1.0;
+}
+
+ul:hover > li:not(:hover) {
+    opacity: 0.5;
+}
+
