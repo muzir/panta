@@ -4,22 +4,21 @@ const clipboardy = require('clipboardy');
 // item should has timestamp dateCreated and text value.
 let items = [];
 
-function anchorOnClick(event) { console.log(this.querySelector('.foo').value) };
-
-function listItemOnClickHandler(){
-    const listGroupItem = document.querySelector('.list-group-item');
-    listGroupItem.onclick = anchorOnClick
+function listItemOnClickHandler(id) {
+    let selectedValue = document.getElementById(id).innerHTML
+    clipboardy.writeSync(selectedValue)
 }
 
 function appendUnderSearchBox(item) {
+    /**TODO replace this with array index usage, when list last {pageItemSize} elements */
+    let uniqueId = (new Date()).getTime()
     let containerContent = '<li class="list-group-item"><img class="img-circle media-object pull-left" src="assets/img/iconfinder_document_text.png" width="32"height="32"><div class="media-body"><strong>'
         + item.dateCreated
-        + '</strong><p class="foo">'
+        + '</strong><p id="'+ uniqueId +'" onclick="listItemOnClickHandler(this.id)">'
         + item.value
         + '</p></div></li>'
     const searchBoxHeader = document.querySelector('#searchBoxHeader');
     searchBoxHeader.insertAdjacentHTML('afterend', containerContent)
-    listItemOnClickHandler()
 }
 
 function saveValue(item) {
@@ -46,7 +45,6 @@ async function listenClipboardOnChange() {
 
 window.onload = () => {
     listenClipboardOnChange()
-    listItemOnClickHandler()
 };
 
 function shouldSave(item, latestCopyValue) {
