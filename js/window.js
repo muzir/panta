@@ -4,50 +4,72 @@ const clipboardy = require('clipboardy');
 // item should has timestamp dateCreated and text value.
 let items = [];
 
-function listItemOnClickHandler(id) {
-    let selectedValue = document.getElementById(id).innerHTML
-    clipboardy.writeSync(selectedValue)
+window.onload = () => {
+    loadItems()
+    listenClipboardOnChange()
+};
+
+function loadItems() {
+    if (items.length == 0) {
+        return
+    }
+    let lastTenItemContent = ''
+    let lastItemIndex = items.length - 1
+    for (let i = 0; i < 10; i++) {
+        let item = items[lastItemIndex - i]
+        if (item != undefined) {
+            lastTenItemContent = lastTenItemContent + createRowHtmlFromItem(item)
+        }
+    }
+    const searchBoxHeaderElement = document.querySelector('#content');
+    searchBoxHeaderElement.innerHTML = lastTenItemContent
 }
 
-function appendUnderSearchBox(item) {
-    /**TODO replace this with array index usage, when list last {pageItemSize} elements */
+function listenClipboardOnChange() {
+    setTimeout(function () {
+        let item = items[items.length - 1]
+        let latestCopyValue = clipboardy.readSync()
+        if (shouldSave(item, latestCopyValue)) {
+            let item = createItem(latestCopyValue)
+            saveValue(item)
+            loadItems();
+        }
+        listenClipboardOnChange();
+    }, 200);
+}
+
+function shouldSave(item, latestCopyValue) {
+    return (item == undefined && (latestCopyValue != '' || latestCopyValue != undefined)) ||
+        (item != undefined && item.value != latestCopyValue)
+}
+
+function createItem(param) {
+    const options = { month: "long", day: "numeric", year: "numeric", hour: "numeric", minute: "numeric" }
     let uniqueId = (new Date()).getTime()
-    let containerContent = '<li class="list-group-item"><img class="img-circle media-object pull-left" src="assets/img/iconfinder_document_text.png" width="32"height="32"><div class="media-body"><strong>'
-        + item.dateCreated
-        + '</strong><p id="'+ uniqueId +'" onclick="listItemOnClickHandler(this.id)">'
-        + item.value
-        + '</p></div></li>'
-    const searchBoxHeader = document.querySelector('#searchBoxHeader');
-    searchBoxHeader.insertAdjacentHTML('afterend', containerContent)
+    let dateCreated = new Intl.DateTimeFormat('utc', options).format(new Date())
+    let item = { id: uniqueId, dateCreated: dateCreated, value: param }
+    return item;
 }
 
 function saveValue(item) {
     items.push(item)
 }
 
-function createItem(param) {
-    const options = { month: "long", day: "numeric", year: "numeric", hour: "numeric", minute: "numeric" }
-    let dateCreated = new Intl.DateTimeFormat('utc', options).format(new Date())
-    let item = { dateCreated: dateCreated, value: param }
-    return item;
+function createRowHtmlFromItem(item) {
+    return '<li class="list-group-item"><img class="img-circle media-object pull-left" src="assets/img/iconfinder_document_text.png" width="32"height="32"><div class="media-body"><strong>'
+        + item.dateCreated
+        + '</strong><p id="' + item.id + '" onclick="listItemOnClickHandler(this.id)">'
+        + item.value
+        + '</p></div></li>';
 }
 
-async function listenClipboardOnChange() {
-    setTimeout(listenClipboardOnChange, 200)
-    let item = items[items.length - 1]
-    let latestCopyValue = clipboardy.readSync()
-    if (shouldSave(item, latestCopyValue)) {
-        let item = createItem(latestCopyValue)
-        saveValue(item)
-        appendUnderSearchBox(item)
+
+function listItemOnClickHandler(id) {
+    /**Pretty bad performance, will be replaced by database delete operation */
+    let removeIndex = items.map(item => item.id).indexOf(parseInt(id))
+    if (removeIndex >= 0) {
+        items.splice(removeIndex, 1)
     }
-}
-
-window.onload = () => {
-    listenClipboardOnChange()
-};
-
-function shouldSave(item, latestCopyValue) {
-    return (item == undefined && (latestCopyValue != '' || latestCopyValue != undefined)) ||
-        (item != undefined && item.value != latestCopyValue)
+    let selectedValue = document.getElementById(id).innerHTML
+    clipboardy.writeSync(selectedValue)
 }
