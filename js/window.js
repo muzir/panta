@@ -5,7 +5,6 @@ const clipboardy = require('clipboardy');
 let items = [];
 
 window.onload = () => {
-    loadItems()
     listenClipboardOnChange()
 };
 
