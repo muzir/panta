@@ -37,6 +37,10 @@ function listenClipboardOnChange() {
     }, 200);
 }
 
+function searchBoxOnChangeListener(event) {
+    console.log('Search key : ' + event.target.value)
+}
+
 function shouldSave(item, latestCopyValue) {
     return (item == undefined && (latestCopyValue != '' || latestCopyValue != undefined)) ||
         (item != undefined && item.value != latestCopyValue)
@@ -65,10 +69,13 @@ function createRowHtmlFromItem(item) {
 
 function listItemOnClickHandler(id) {
     /**Pretty bad performance, will be replaced by database delete operation */
-    let removeIndex = items.map(item => item.id).indexOf(parseInt(id))
-    if (removeIndex >= 0) {
-        items.splice(removeIndex, 1)
-    }
+    removeItem(id);
     let selectedValue = document.getElementById(id).innerHTML
     clipboardy.writeSync(selectedValue)
+}
+function removeItem(id) {
+    let removeIndex = items.map(item => item.id).indexOf(parseInt(id));
+    if (removeIndex >= 0) {
+        items.splice(removeIndex, 1);
+    }
 }
