@@ -1,10 +1,27 @@
 const clipboardy = require('clipboardy');
+const sqlite3 = require('sqlite3').verbose();
+let db = new sqlite3.Database('mydb.db');
 
 // loadItems to item array then replace it with database usage. Load 10 items to the array.
 // item should has timestamp dateCreated and text value.
 let items = [];
 
 window.onload = () => {
+    db.serialize(function() {
+        db.run("CREATE TABLE if not exists lorem (info TEXT)");
+    
+        var stmt = db.prepare("INSERT INTO lorem VALUES (?)");
+        for (var i = 0; i < 10; i++) {
+            stmt.run("Ipsum " + i);
+        }
+        stmt.finalize();
+    
+        db.each("SELECT rowid AS id, info FROM lorem", function(err, row) {
+            console.log(row.id + ": " + row.info);
+        });
+    });
+    
+    db.close();
     listenClipboardOnChange()
 };
 
