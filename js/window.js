@@ -1,31 +1,28 @@
 const clipboardy = require('clipboardy');
 const sqlite3 = require('sqlite3').verbose();
-let db = new sqlite3.Database('mydb.db');
+let db = new sqlite3.Database('panta.db');
 
 // loadItems to item array then replace it with database usage. Load 10 items to the array.
 // item should has timestamp dateCreated and text value.
 let items = [];
 
 window.onload = () => {
-    db.serialize(function() {
-        db.run("CREATE TABLE if not exists lorem (info TEXT)");
-    
-        var stmt = db.prepare("INSERT INTO lorem VALUES (?)");
-        for (var i = 0; i < 10; i++) {
-            stmt.run("Ipsum " + i);
-        }
-        stmt.finalize();
-    
-        db.each("SELECT rowid AS id, info FROM lorem", function(err, row) {
-            console.log(row.id + ": " + row.info);
-        });
+    db.serialize(function () {
+        db.run("CREATE TABLE if not exists clipboard_history (uniqueId INTEGER, info TEXT, dateCreated INTEGER)");
+
     });
-    
-    db.close();
+
     listenClipboardOnChange()
 };
 
 function loadItems() {
+    db.serialize(function () {
+        db.each("SELECT uniqueId AS uniqueId, info, dateCreated FROM clipboard_history", function (err, row) {
+            console.log(row.uniqueId + ": " + row.info + ":" + row.dateCreated);
+        });
+    });
+
+
     if (items.length == 0) {
         return
     }
@@ -72,6 +69,13 @@ function createItem(param) {
 }
 
 function saveValue(item) {
+    db.serialize(function () {
+        db.run("CREATE TABLE if not exists clipboard_history (uniqueId INTEGER, info TEXT, dateCreated INTEGER)");
+        var stmt = db.prepare("INSERT INTO clipboard_history VALUES (?,?,?)");
+        stmt.run(item.id, item.value, item.dateCreated);
+        stmt.finalize();
+    });
+
     items.push(item)
 }
 
