@@ -1,27 +1,29 @@
 const clipboardy = require('clipboardy');
 const sqlite3 = require('sqlite3').verbose();
-let db = new sqlite3.Database('panta.db');
 
-// loadItems to item array then replace it with database usage. Load 10 items to the array.
-// item should has timestamp dateCreated and text value.
-let items = [];
 
 window.onload = () => {
+    let db = new sqlite3.Database('panta.db');
     db.serialize(function () {
         db.run("CREATE TABLE if not exists clipboard_history (uniqueId INTEGER, info TEXT, dateCreated INTEGER)");
 
     });
-
+    db.close()
+    //loadItems()
     listenClipboardOnChange()
 };
 
 function loadItems() {
+    let items = [];
+    let db = new sqlite3.Database('panta.db');
     db.serialize(function () {
-        db.each("SELECT uniqueId AS uniqueId, info, dateCreated FROM clipboard_history", function (err, row) {
-            console.log(row.uniqueId + ": " + row.info + ":" + row.dateCreated);
+        db.each("SELECT uniqueId AS uniqueId, info, dateCreated FROM clipboard_history ORDER BY dateCreated DESC LIMIT 10", function (err, row) {
+            let item = { id: row.uniqueId, dateCreated: row.dateCreated, value: row.info }
+            items.push(item)
+            //console.log(row.uniqueId + ": " + row.info + ":" + row.dateCreated);
         });
     });
-
+    db.close()
 
     if (items.length == 0) {
         return
@@ -40,12 +42,21 @@ function loadItems() {
 
 function listenClipboardOnChange() {
     setTimeout(function () {
-        let item = items[items.length - 1]
+        let lastItem
+        let db = new sqlite3.Database('panta.db');
+        db.serialize(function () {
+            db.get("SELECT uniqueId AS uniqueId, info, dateCreated FROM clipboard_history ORDER BY dateCreated DESC LIMIT 1", function (err, row) {
+                lastItem = { id: row.uniqueId, dateCreated: row.dateCreated, value: row.info }
+                console.log('LatestSavedItem:' + lastItem.value);
+            });
+        });
+        db.close()
         let latestCopyValue = clipboardy.readSync()
-        if (shouldSave(item, latestCopyValue)) {
-            let item = createItem(latestCopyValue)
-            saveValue(item)
-            loadItems();
+        console.log('latestCopyValue:' + latestCopyValue);
+        if (shouldSave(lastItem, latestCopyValue)) {
+            let newItem = createItem(latestCopyValue)
+            saveValue(newItem)
+            loadItems()
         }
         listenClipboardOnChange();
     }, 200);
@@ -69,14 +80,13 @@ function createItem(param) {
 }
 
 function saveValue(item) {
+    let db = new sqlite3.Database('panta.db');
     db.serialize(function () {
-        db.run("CREATE TABLE if not exists clipboard_history (uniqueId INTEGER, info TEXT, dateCreated INTEGER)");
         var stmt = db.prepare("INSERT INTO clipboard_history VALUES (?,?,?)");
         stmt.run(item.id, item.value, item.dateCreated);
         stmt.finalize();
     });
-
-    items.push(item)
+    db.close()
 }
 
 function createRowHtmlFromItem(item) {
