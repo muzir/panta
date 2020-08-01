@@ -15,7 +15,7 @@
   "author": "muzir",
   "license": "ISC",
   "devDependencies": {
-    "electron": "^9.0.0"
+    "electron": "^9.1.2"
   },
   "dependencies": {
     "clipboardy": "^2.3.0",

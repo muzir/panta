@@ -1,47 +1,32 @@
 const clipboardy = require('clipboardy');
-const sqlite3 = require('sqlite3').verbose();
+const AppDAO = require('./js/dao')
+const ClipboardHistoryRepository = require('./js/clipboard_history_repository')
 
 let lastItemValue
-let db = new sqlite3.Database('panta.db', sqlite3.OPEN_READWRITE)
 
-function getDatabaseConnection(){
-    return new sqlite3.Database('panta.db', sqlite3.OPEN_READWRITE)
-}
+const dao = new AppDAO('./panta.db')
+const clipboardHistoryRepository = new ClipboardHistoryRepository(dao)
+
 
 window.onload = () => {
-    
-    this.db.serialize(function () {
-        this.db.run("CREATE TABLE if not exists clipboard_history (uniqueId INTEGER, info TEXT, dateCreated INTEGER)");
-
+    clipboardHistoryRepository.createTable()
+    clipboardHistoryRepository.getLastElement().then((row) => {
+        lastItemValue = row.info
+        loadItems()
+        listenClipboardOnChange()
     });
-
-    this.db.serialize(function () {
-        this.db.get("SELECT info FROM clipboard_history ORDER BY uniqueId DESC LIMIT 1", function (err, row) {
-            lastItemValue = row.info
-        })
-    })
-    this.db.close()
-    loadItems()
-    listenClipboardOnChange()
 };
 
 function loadItems() {
-    console.log('loadItems')
-    let db = getDatabaseConnection()
-    db.serialize(function () {
-        db.all("SELECT uniqueId AS uniqueId, info, dateCreated FROM clipboard_history ORDER BY uniqueId DESC LIMIT 10", function (err, rows) {
-            let lastTenItemContent = ''
-            rows.forEach((row) => {
-                let item = { id: row.uniqueId, dateCreated: row.dateCreated, value: row.info }
-                console.log('row:'+row.info)
-                lastTenItemContent = lastTenItemContent + createRowHtmlFromItem(item)
-            });
-            const searchBoxHeaderElement = document.querySelector('#content')
-            searchBoxHeaderElement.innerHTML = lastTenItemContent
-        })
-
-    });
-    db.close()
+    clipboardHistoryRepository.getAll().then((rows) => {
+        let lastTenItemContent = ''
+        rows.forEach((row) => {
+            let item = { id: row.uniqueId, dateCreated: row.dateCreated, value: row.info }
+            lastTenItemContent = lastTenItemContent + createRowHtmlFromItem(item)
+        });
+        const searchBoxHeaderElement = document.querySelector('#content')
+        searchBoxHeaderElement.innerHTML = lastTenItemContent
+    })
 }
 
 function listenClipboardOnChange() {
@@ -70,7 +55,7 @@ function shouldSave(latestCopyValue) {
 }
 
 
- function createItem(param) {
+function createItem(param) {
     return new Promise((resolve, reject) => {
         const options = { month: "long", day: "numeric", year: "numeric", hour: "numeric", minute: "numeric" }
         let uniqueId = (new Date()).getTime()
@@ -81,21 +66,7 @@ function shouldSave(latestCopyValue) {
 }
 
 function saveValue(item) {
-    console.log('saveValue:'+item.value)
-    let db = getDatabaseConnection()
-    db.serialize(function () {
-        var stmt = db.prepare("INSERT INTO clipboard_history VALUES (?,?,?)");
-        stmt.run(item.id, item.value, item.dateCreated);
-        stmt.finalize();
-        console.log('saveValue finalize')
-    });
-    db.close()
-    db = getDatabaseConnection()
-    db.serialize(function () {
-        db.get("SELECT info FROM clipboard_history ORDER BY uniqueId DESC LIMIT 1", function (err, row) {
-            console.log('save select:'+row.info) 
-        })
-    })
+    clipboardHistoryRepository.create(item)
     return item
 }
 
