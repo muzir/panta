@@ -10,18 +10,19 @@ const clipboardHistoryRepository = new ClipboardHistoryRepository(dao)
 
 window.onload = () => {
     clipboardHistoryRepository.createTable()
-    clipboardHistoryRepository.getLastElement().then((row) => {
-        lastItemValue = row.info
-        loadItems()
-        listenClipboardOnChange()
-    });
+        .then(() => clipboardHistoryRepository.getLastElement())
+        .then((row) => lastItemValue = row && row.info)
+        .then(() => loadItems())
+        .then(() => listenClipboardOnChange())
 };
 
 function loadItems() {
     clipboardHistoryRepository.getAll().then((rows) => {
         let lastTenItemContent = ''
+        const options = { month: "long", day: "numeric", year: "numeric", hour: "numeric", minute: "numeric" }
         rows.forEach((row) => {
-            let item = { id: row.uniqueId, dateCreated: row.dateCreated, value: row.info }
+            let formattedDateCreated = new Intl.DateTimeFormat('utc', options).format(new Date(row.dateCreated))
+            let item = { id: row.id, formattedDateCreated: formattedDateCreated, info: row.info }
             lastTenItemContent = lastTenItemContent + createRowHtmlFromItem(item)
         });
         const searchBoxHeaderElement = document.querySelector('#content')
@@ -57,10 +58,8 @@ function shouldSave(latestCopyValue) {
 
 function createItem(param) {
     return new Promise((resolve, reject) => {
-        const options = { month: "long", day: "numeric", year: "numeric", hour: "numeric", minute: "numeric" }
-        let uniqueId = (new Date()).getTime()
-        let dateCreated = new Intl.DateTimeFormat('utc', options).format(new Date())
-        let item = { id: uniqueId, dateCreated: dateCreated, value: param }
+        let dateCreated = new Date().getTime()
+        let item = { dateCreated: dateCreated, info: param }
         resolve(item)
     });
 }
@@ -72,9 +71,9 @@ function saveValue(item) {
 
 function createRowHtmlFromItem(item) {
     return '<li class="list-group-item"><img class="img-circle media-object pull-left" src="assets/img/iconfinder_document_text.png" width="32"height="32"><div class="media-body"><strong>'
-        + item.dateCreated
+        + item.formattedDateCreated
         + '</strong><p id="' + item.id + '" onclick="listItemOnClickHandler(this.id)">'
-        + item.value
+        + item.info
         + '</p></div></li>';
 }
 
