@@ -1,8 +1,8 @@
-const sqlite3_1 = require('sqlite3')
+const sqlite3 = require('sqlite3')
 
 class AppDAO {
     constructor(dbFilePath) {
-        this.db = new sqlite3_1.Database(dbFilePath, (err) => {
+        this.db = new sqlite3.Database(dbFilePath, (err) => {
             if (err) {
                 console.log('Could not connect to database', err)
             } else {

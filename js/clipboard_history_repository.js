@@ -14,6 +14,12 @@ class ClipboardHistoryRepository {
             [clipboard_history.info, clipboard_history.dateCreated])
     }
 
+    delete(id) {
+        return this.dao.run(
+            "DELETE FROM clipboard_history WHERE id=?",
+            [id])
+    }
+
     getLastElement() {
         return this.dao.get(
             "SELECT info FROM clipboard_history ORDER BY dateCreated DESC LIMIT 1",
@@ -22,6 +28,11 @@ class ClipboardHistoryRepository {
 
     getAll() {
         return this.dao.all("SELECT id AS id, info, dateCreated FROM clipboard_history ORDER BY dateCreated DESC LIMIT 10")
+    }
+
+    getBySearchKey(searchKey) {
+        let info = '%' + searchKey + '%';
+        return this.dao.all("SELECT id AS id, info, dateCreated FROM clipboard_history where info like $info ORDER BY dateCreated DESC LIMIT 10", [info])
     }
 }
 
