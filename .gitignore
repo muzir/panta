@@ -2,3 +2,5 @@
 package-lock.json
 panta.db
 .DS_Store
+/build
+/dist
