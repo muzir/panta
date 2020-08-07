@@ -1,10 +1,12 @@
 const clipboardy = require('clipboardy');
 const AppDAO = require('./js/dao')
 const ClipboardHistoryRepository = require('./js/clipboard_history_repository')
+const electron = require('electron');
 
 let lastItemValue
 
-const dao = new AppDAO('./panta.db')
+const userDataPath = (electron.app || electron.remote.app).getPath('userData');
+const dao = new AppDAO(userDataPath + '/panta.db')
 const clipboardHistoryRepository = new ClipboardHistoryRepository(dao)
 
 window.onload = () => {
