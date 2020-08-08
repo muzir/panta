@@ -18,12 +18,12 @@
     "dmg": {
       "contents": [
         {
-          "x": 110,
-          "y": 150
+          "x": 160,
+          "y": 220
         },
         {
-          "x": 240,
-          "y": 150,
+          "x": 380,
+          "y": 220,
           "type": "link",
           "path": "/Applications"
         }
@@ -37,7 +37,7 @@
     },
     "win": {
       "target": "squirrel",
-      "icon": "build/icon.ico"
+      "icon": "build/icon.png"
     }
   },
   "keywords": [
