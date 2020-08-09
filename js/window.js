@@ -3,7 +3,8 @@ const AppDAO = require('./js/dao')
 const ClipboardHistoryRepository = require('./js/clipboard_history_repository')
 const electron = require('electron');
 
-let lastItemValue
+
+let deleteItemId
 
 const userDataPath = (electron.app || electron.remote.app).getPath('userData');
 const dao = new AppDAO(userDataPath + '/panta.db')
@@ -11,14 +12,12 @@ const clipboardHistoryRepository = new ClipboardHistoryRepository(dao)
 
 window.onload = () => {
     clipboardHistoryRepository.createTable()
-        .then(() => clipboardHistoryRepository.getLastElement())
-        .then((row) => lastItemValue = row && row.info)
         .then(() => loadItems())
         .then(() => listenClipboardOnChange())
 };
 
 function loadItems() {
-    clipboardHistoryRepository.getAll().then((rows) => {
+    clipboardHistoryRepository.getLastTenElements().then((rows) => {
         setRowsToContent(rows)
     })
 }
@@ -35,17 +34,34 @@ function setRowsToContent(rows) {
     searchBoxHeaderElement.innerHTML = lastTenItemContent
 }
 
+function convert(str)
+{
+  str = str.replace(/&/g, "&amp;");
+  str = str.replace(/>/g, "&gt;");
+  str = str.replace(/</g, "&lt;");
+  str = str.replace(/"/g, "&quot;");
+  str = str.replace(/'/g, "&#039;");
+  return str;
+}
+
 function listenClipboardOnChange() {
     setTimeout(function () {
         let latestCopyValue = clipboardy.readSync()
-        if (shouldSave(latestCopyValue)) {
-            lastItemValue = latestCopyValue
-            createItem(latestCopyValue)
-                .then(newItem => saveValue(newItem))
-                .then(result => loadItems())
-        }
+        isNewItemCopied(convert(latestCopyValue)).then((isNew) => {
+            if (isNew) {
+                applyNewItemChange(latestCopyValue)
+            }
+        })
         listenClipboardOnChange();
-    }, 200);
+    }, 100);
+}
+
+function applyNewItemChange(latestCopyValue) {
+    console.log('new item :' + latestCopyValue)
+    createItem(latestCopyValue)
+        .then(newItem => saveValue(newItem))
+        .then(() => deleteItemId && clipboardHistoryRepository.delete(deleteItemId))
+        .then(result => loadItems())
 }
 
 function searchBoxOnChangeListener(event) {
@@ -54,16 +70,22 @@ function searchBoxOnChangeListener(event) {
     })
 }
 
-function shouldSave(latestCopyValue) {
-    return (lastItemValue == undefined && (latestCopyValue != '' || latestCopyValue != undefined))
-        || (lastItemValue != undefined && lastItemValue != latestCopyValue)
+function isNewItemCopied(latestCopyValue) {
+    return new Promise((resolve) => {
+        clipboardHistoryRepository.getLastElement()
+            .then((row) => {
+                let lastItemValue = row && row.info
+                resolve((lastItemValue == undefined && (latestCopyValue != '' || latestCopyValue != undefined))
+                    || (lastItemValue != undefined && lastItemValue != latestCopyValue))
+            })
+    })
 }
 
 
 function createItem(param) {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
         let dateCreated = new Date().getTime()
-        let item = { dateCreated: dateCreated, info: param }
+        let item = { dateCreated: dateCreated, info: convert(param) }
         resolve(item)
     });
 }
@@ -82,8 +104,7 @@ function createRowHtmlFromItem(item) {
 }
 
 function listItemOnClickHandler(id) {
-    clipboardHistoryRepository.delete(id).then(() => {
-        let selectedValue = document.getElementById(id).innerHTML
-        clipboardy.writeSync(selectedValue)
-    })
+    let selectedValue = document.getElementById(id).innerHTML
+    clipboardy.writeSync(selectedValue)
+    deleteItemId = id
 }

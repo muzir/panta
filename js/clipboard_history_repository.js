@@ -26,7 +26,7 @@ class ClipboardHistoryRepository {
             [])
     }
 
-    getAll() {
+    getLastTenElements() {
         return this.dao.all("SELECT id AS id, info, dateCreated FROM clipboard_history ORDER BY dateCreated DESC LIMIT 10")
     }
 
