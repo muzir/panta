@@ -34,20 +34,10 @@ function setRowsToContent(rows) {
     searchBoxHeaderElement.innerHTML = lastTenItemContent
 }
 
-function convert(str)
-{
-  str = str.replace(/&/g, "&amp;");
-  str = str.replace(/>/g, "&gt;");
-  str = str.replace(/</g, "&lt;");
-  str = str.replace(/"/g, "&quot;");
-  str = str.replace(/'/g, "&#039;");
-  return str;
-}
-
 function listenClipboardOnChange() {
     setTimeout(function () {
         let latestCopyValue = clipboardy.readSync()
-        isNewItemCopied(convert(latestCopyValue)).then((isNew) => {
+        isNewItemCopied(latestCopyValue).then((isNew) => {
             if (isNew) {
                 applyNewItemChange(latestCopyValue)
             }
@@ -85,7 +75,7 @@ function isNewItemCopied(latestCopyValue) {
 function createItem(param) {
     return new Promise((resolve) => {
         let dateCreated = new Date().getTime()
-        let item = { dateCreated: dateCreated, info: convert(param) }
+        let item = { dateCreated: dateCreated, info: param }
         resolve(item)
     });
 }
@@ -99,8 +89,17 @@ function createRowHtmlFromItem(item) {
     return '<li class="list-group-item"><img class="img-circle media-object pull-left" src="assets/img/iconfinder_document_text.png" width="32"height="32"><div class="media-body"><strong>'
         + item.formattedDateCreated
         + '</strong><p id="' + item.id + '" onclick="listItemOnClickHandler(this.id)">'
-        + item.info
+        + replaceHtmlEscapeCharacter(item.info)
         + '</p></div></li>';
+}
+
+function replaceHtmlEscapeCharacter(str) {
+    str = str.replace(/&/g, "&amp;");
+    str = str.replace(/>/g, "&gt;");
+    str = str.replace(/</g, "&lt;");
+    str = str.replace(/"/g, "&quot;");
+    str = str.replace(/'/g, "&#039;");
+    return str;
 }
 
 function listItemOnClickHandler(id) {
