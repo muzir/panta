@@ -1,4 +1,4 @@
-const { app, BrowserWindow } = require('electron')
+const { app, BrowserWindow, globalShortcut } = require('electron')
 
 
 function createWindow() {
@@ -16,6 +16,11 @@ function createWindow() {
 
   // Open the DevTools.
   win.webContents.openDevTools()
+
+  // Register a 'CommandOrControl+E' shortcut listener.
+	globalShortcut.register('CmdOrCtrl+E ', () => {
+		win.show()
+	})
 }
 
 // This method will be called when Electron has finished
@@ -30,6 +35,8 @@ app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
     app.quit()
   }
+  // Unregister all shortcuts.
+	globalShortcut.unregisterAll()
 })
 
 app.on('activate', () => {
