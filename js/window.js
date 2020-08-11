@@ -104,7 +104,7 @@ function createRowHtmlFromItem(item) {
 }
 
 function listItemOnClickHandler(id) {
-    let selectedValue = document.getElementById(id).innerHTML
+    let selectedValue = document.getElementById(id).innerText
     clipboardy.writeSync(selectedValue)
     deleteItemId = id
 }
