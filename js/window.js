@@ -25,10 +25,12 @@ function loadItems() {
 function setRowsToContent(rows) {
     let lastTenItemContent = ''
     const options = { month: "long", day: "numeric", year: "numeric", hour: "numeric", minute: "numeric" }
+    let tabIndex = 2
     rows.forEach((row) => {
         let formattedDateCreated = new Intl.DateTimeFormat('utc', options).format(new Date(row.dateCreated))
         let item = { id: row.id, formattedDateCreated: formattedDateCreated, info: row.info }
-        lastTenItemContent = lastTenItemContent + createRowHtmlFromItem(item)
+        lastTenItemContent = lastTenItemContent + createRowHtmlFromItem(item, tabIndex)
+        tabIndex++
     });
     const searchBoxHeaderElement = document.querySelector('#content')
     searchBoxHeaderElement.innerHTML = lastTenItemContent
@@ -85,10 +87,10 @@ function saveValue(item) {
     return item
 }
 
-function createRowHtmlFromItem(item) {
+function createRowHtmlFromItem(item, tabIndex) {
     return '<li class="list-group-item"><img class="img-circle media-object pull-left" src="assets/img/iconfinder_document_text.png" width="32"height="32"><div class="media-body"><strong>'
         + item.formattedDateCreated
-        + '</strong><p id="' + item.id + '" onclick="listItemOnClickHandler(this.id)">'
+        + '</strong><p tabIndex="' + tabIndex + '" id="' + item.id + '" onclick="itemOnClickHandler(this.id)" onkeypress="itemOnKeyPressHandler(event)">'
         + replaceHtmlEscapeCharacter(item.info)
         + '</p></div></li>';
 }
@@ -102,8 +104,18 @@ function replaceHtmlEscapeCharacter(str) {
     return str;
 }
 
-function listItemOnClickHandler(id) {
+function itemOnClickHandler(id) {
     let selectedValue = document.getElementById(id).innerText
     clipboardy.writeSync(selectedValue)
     deleteItemId = id
 }
+
+function itemOnKeyPressHandler(event) {
+    // Number 13 is the "Enter" key on the keyboard
+    if (event.keyCode === 13) {
+        // Cancel the default action, if needed
+        event.preventDefault();
+        itemOnClickHandler(event.target.id)
+    }
+}
+
