@@ -1,12 +1,13 @@
-const clipboardy = require('clipboardy');
+const clipboardy = require('clipboardy')
 const AppDAO = require('./js/dao')
 const ClipboardHistoryRepository = require('./js/clipboard_history_repository')
-const electron = require('electron');
+const electron = require('electron')
+const { ipcRenderer } = require ('electron');
 
 
 let deleteItemId
 
-const userDataPath = (electron.app || electron.remote.app).getPath('userData');
+const userDataPath = (electron.app || electron.remote.app).getPath('userData')
 const dao = new AppDAO(userDataPath + '/panta.db')
 const clipboardHistoryRepository = new ClipboardHistoryRepository(dao)
 
@@ -14,7 +15,7 @@ window.onload = () => {
     clipboardHistoryRepository.createTable()
         .then(() => loadItems())
         .then(() => listenClipboardOnChange())
-};
+}
 
 function loadItems() {
     clipboardHistoryRepository.getLastTenElements().then((rows) => {
@@ -31,7 +32,7 @@ function setRowsToContent(rows) {
         let item = { id: row.id, formattedDateCreated: formattedDateCreated, info: row.info }
         lastTenItemContent = lastTenItemContent + createRowHtmlFromItem(item, tabIndex)
         tabIndex++
-    });
+    })
     const contentDivElement = document.getElementById('content')
     contentDivElement.innerHTML = lastTenItemContent
 }
@@ -44,8 +45,8 @@ function listenClipboardOnChange() {
                 applyNewItemChange(latestCopyValue)
             }
         })
-        listenClipboardOnChange();
-    }, 100);
+        listenClipboardOnChange()
+    }, 100)
 }
 
 function applyNewItemChange(latestCopyValue) {
@@ -73,7 +74,7 @@ function createItem(param) {
         let dateCreated = new Date().getTime()
         let item = { dateCreated: dateCreated, info: param }
         resolve(item)
-    });
+    })
 }
 
 function saveValue(item) {
@@ -86,16 +87,16 @@ function createRowHtmlFromItem(item, tabIndex) {
         + item.formattedDateCreated
         + '</strong><p tabIndex="' + tabIndex + '" id="' + item.id + '" onclick="itemOnClickHandler(this.id)" onkeypress="itemOnKeyPressHandler(event)">'
         + replaceHtmlEscapeCharacter(item.info)
-        + '</p></div></li>';
+        + '</p></div></li>'
 }
 
 function replaceHtmlEscapeCharacter(str) {
-    str = str.replace(/&/g, "&amp;");
-    str = str.replace(/>/g, "&gt;");
-    str = str.replace(/</g, "&lt;");
-    str = str.replace(/"/g, "&quot;");
-    str = str.replace(/'/g, "&#039;");
-    return str;
+    str = str.replace(/&/g, "&amp;")
+    str = str.replace(/>/g, "&gt;")
+    str = str.replace(/</g, "&lt;")
+    str = str.replace(/"/g, "&quot;")
+    str = str.replace(/'/g, "&#039;")
+    return str
 }
 
 function itemOnClickHandler(id) {
@@ -103,13 +104,14 @@ function itemOnClickHandler(id) {
     clipboardy.writeSync(selectedValue)
     deleteItemId = id
     cleanSearchBox()
+    hideWindow()
 }
 
 function itemOnKeyPressHandler(event) {
     // Number 13 is the "Enter" key on the keyboard
     if (event.keyCode === 13) {
         // Cancel the default action, if needed
-        event.preventDefault();
+        event.preventDefault()
         itemOnClickHandler(event.target.id)
     }
 }
@@ -123,4 +125,8 @@ function searchBoxOnChangeListener(event) {
 function cleanSearchBox(){
     const searchBoxElement = document.getElementById('searchBox')
     searchBoxElement.value = ''
+}
+
+function hideWindow(){
+    ipcRenderer.send ('hide');
 }

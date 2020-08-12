@@ -1,9 +1,10 @@
-const { app, BrowserWindow, globalShortcut } = require('electron')
+const { app, BrowserWindow, globalShortcut, ipcMain } = require('electron')
 
+let win
 
 function createWindow() {
   // Create the browser window.
-  const win = new BrowserWindow({
+  win = new BrowserWindow({
     width: 800,
     height: 600,
     webPreferences: {
@@ -13,14 +14,18 @@ function createWindow() {
 
   // and load the index.html of the app.
   win.loadFile('index.html')
+  win.once ('closed', () => { win = null })
+  win.on ('blur', () => { win.hide () })
 
   // Open the DevTools.
   win.webContents.openDevTools()
 
-  // Register a 'CommandOrControl+E' shortcut listener.
-	globalShortcut.register('CmdOrCtrl+1', () => { 
-		win.show()
-	})
+  // Register a 'CommandOrControl+1' shortcut listener.
+  globalShortcut.register('CmdOrCtrl+1', () => {
+    win.show()
+    win.restore()
+  })
+  ipcMain.on ('hide', () => { app.hide () })
 }
 
 // This method will be called when Electron has finished
@@ -36,14 +41,14 @@ app.on('window-all-closed', () => {
     app.quit()
   }
   // Unregister all shortcuts.
-	globalShortcut.unregisterAll()
+  globalShortcut.unregisterAll()
 })
 
 app.on('activate', () => {
   // On macOS it's common to re-create a window in the app when the
   // dock icon is clicked and there are no other windows open.
   if (BrowserWindow.getAllWindows().length === 0) {
-    createWindow()
+    win = createWindow()
   }
 })
 
