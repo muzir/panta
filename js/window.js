@@ -32,8 +32,8 @@ function setRowsToContent(rows) {
         lastTenItemContent = lastTenItemContent + createRowHtmlFromItem(item, tabIndex)
         tabIndex++
     });
-    const searchBoxHeaderElement = document.querySelector('#content')
-    searchBoxHeaderElement.innerHTML = lastTenItemContent
+    const contentDivElement = document.getElementById('content')
+    contentDivElement.innerHTML = lastTenItemContent
 }
 
 function listenClipboardOnChange() {
@@ -54,12 +54,6 @@ function applyNewItemChange(latestCopyValue) {
         .then(newItem => saveValue(newItem))
         .then(() => deleteItemId && clipboardHistoryRepository.delete(deleteItemId))
         .then(result => loadItems())
-}
-
-function searchBoxOnChangeListener(event) {
-    clipboardHistoryRepository.getBySearchKey(event.target.value).then((rows) => {
-        setRowsToContent(rows)
-    })
 }
 
 function isNewItemCopied(latestCopyValue) {
@@ -108,6 +102,7 @@ function itemOnClickHandler(id) {
     let selectedValue = document.getElementById(id).innerText
     clipboardy.writeSync(selectedValue)
     deleteItemId = id
+    cleanSearchBox()
 }
 
 function itemOnKeyPressHandler(event) {
@@ -119,3 +114,13 @@ function itemOnKeyPressHandler(event) {
     }
 }
 
+function searchBoxOnChangeListener(event) {
+    clipboardHistoryRepository.getBySearchKey(event.target.value).then((rows) => {
+        setRowsToContent(rows)
+    })
+}
+
+function cleanSearchBox(){
+    const searchBoxElement = document.getElementById('searchBox')
+    searchBoxElement.value = ''
+}

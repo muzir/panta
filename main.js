@@ -18,7 +18,7 @@ function createWindow() {
   win.webContents.openDevTools()
 
   // Register a 'CommandOrControl+E' shortcut listener.
-	globalShortcut.register('CmdOrCtrl+E ', () => {
+	globalShortcut.register('CmdOrCtrl+1', () => { 
 		win.show()
 	})
 }
