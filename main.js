@@ -5,7 +5,7 @@ let win
 function createWindow() {
   // Create the browser window.
   win = new BrowserWindow({
-    width: 800,
+    width: 400,
     height: 600,
     webPreferences: {
       nodeIntegration: true
@@ -14,18 +14,18 @@ function createWindow() {
 
   // and load the index.html of the app.
   win.loadFile('index.html')
-  win.once ('closed', () => { win = null })
-  win.on ('blur', () => { win.hide () })
+  win.once('closed', () => { win = null })
+  win.on('blur', () => { win.hide() })
 
   // Open the DevTools.
-  win.webContents.openDevTools()
+  //win.webContents.openDevTools()
 
   // Register a 'CommandOrControl+1' shortcut listener.
   globalShortcut.register('CmdOrCtrl+1', () => {
     win.show()
     win.restore()
   })
-  ipcMain.on ('hide', () => { app.hide () })
+  ipcMain.on('hide', () => { app.hide() })
 }
 
 // This method will be called when Electron has finished
@@ -49,6 +49,9 @@ app.on('activate', () => {
   // dock icon is clicked and there are no other windows open.
   if (BrowserWindow.getAllWindows().length === 0) {
     win = createWindow()
+  } else {
+    win.show()
+    win.restore()
   }
 })
 
