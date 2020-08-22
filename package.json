@@ -3,7 +3,10 @@
   "version": "0.1.0",
   "license": "Apache-2.0",
   "description": "simple clipboard utility program",
-  "author": "muzir",
+  "author": {
+    "name": "muzir",
+    "email": "erhun.baycelik@gmail.com"
+  },
   "main": "main.js",
   "scripts": {
     "postinstall": "install-app-deps",
