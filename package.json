@@ -36,7 +36,8 @@
       "target": [
         "AppImage",
         "deb"
-      ]
+      ],
+      "icon": "build/icon.png"
     },
     "win": {
       "target": "squirrel",
