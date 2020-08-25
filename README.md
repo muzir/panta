@@ -1,3 +1,5 @@
+![panta logo](https://raw.githubusercontent.com/muzir/panta/master/build/icon.png "panta logo")
+
 # What is panta
 panta is a simple clipboard manager which aims to run in Linux, Mac and Windows. Currently it has releases at Linux and Mac. 
 
