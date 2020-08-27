@@ -15,7 +15,7 @@ function createWindow() {
   // and load the index.html of the app.
   win.loadFile('index.html')
   win.once('closed', () => { win = null })
-  win.on('blur', () => { win.hide() })
+  win.on('blur', () => { win && win.hide() })
 
   // Open the DevTools.
   //win.webContents.openDevTools()
@@ -25,7 +25,9 @@ function createWindow() {
     win.show()
     win.restore()
   })
-  ipcMain.on('hide', () => { app.hide() })
+  ipcMain.on('hide', () => {
+    app && app.hide()
+  })
 }
 
 // This method will be called when Electron has finished
