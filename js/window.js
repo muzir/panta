@@ -2,7 +2,7 @@ const clipboardy = require('clipboardy')
 const AppDAO = require('./js/dao')
 const ClipboardHistoryRepository = require('./js/clipboard_history_repository')
 const electron = require('electron')
-const { ipcRenderer } = require ('electron');
+const { ipcRenderer } = require('electron');
 
 
 let deleteItemId
@@ -50,11 +50,10 @@ function listenClipboardOnChange() {
 }
 
 function applyNewItemChange(latestCopyValue) {
-    console.log('new item :' + latestCopyValue)
     createItem(latestCopyValue)
         .then(newItem => saveValue(newItem))
         .then(() => deleteItemId && clipboardHistoryRepository.delete(deleteItemId))
-        .then(result => loadItems())
+        .then(() => loadItems())
 }
 
 function isNewItemCopied(latestCopyValue) {
@@ -100,11 +99,14 @@ function replaceHtmlEscapeCharacter(str) {
 }
 
 function itemOnClickHandler(id) {
-    let selectedValue = document.getElementById(id).innerText
-    clipboardy.writeSync(selectedValue)
-    deleteItemId = id
-    cleanSearchBox()
-    hideWindow()
+    clipboardHistoryRepository.getById(id)
+        .then((row) => {
+            let selectedValue = row.info
+            clipboardy.writeSync(selectedValue)
+            deleteItemId = id
+            cleanSearchBox()
+            hideWindow()
+        })
 }
 
 function itemOnKeyPressHandler(event) {
@@ -122,11 +124,11 @@ function searchBoxOnChangeListener(event) {
     })
 }
 
-function cleanSearchBox(){
+function cleanSearchBox() {
     const searchBoxElement = document.getElementById('searchBox')
     searchBoxElement.value = ''
 }
 
-function hideWindow(){
-    ipcRenderer.send ('hide');
+function hideWindow() {
+    ipcRenderer.send('hide');
 }

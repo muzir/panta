@@ -20,6 +20,12 @@ class ClipboardHistoryRepository {
             [id])
     }
 
+    getById(id) {
+        return this.dao.get(
+            "SELECT info FROM clipboard_history WHERE id=?",
+            [id])
+    }
+
     getLastElement() {
         return this.dao.get(
             "SELECT info FROM clipboard_history ORDER BY dateCreated DESC LIMIT 1",
