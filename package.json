@@ -11,7 +11,7 @@
   "scripts": {
     "postinstall": "install-app-deps",
     "start": "npm install && electron .",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest",
     "pack": "electron-builder --dir",
     "dist": "electron-builder"
   },
@@ -55,6 +55,8 @@
   },
   "devDependencies": {
     "electron": "^9.1.2",
-    "electron-builder": "^22.8.0"
+    "electron-builder": "^22.8.0",
+    "jest": "^26.4.2",
+    "spectron": "^11.1.0"
   }
 }
