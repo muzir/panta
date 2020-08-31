@@ -1,6 +1,12 @@
 const Application = require("spectron").Application;
-const electronPath = require("electron");
 const path = require("path");
+var electronPath = path.join(__dirname, '..', 'node_modules', '.bin', 'electron');
+
+if (process.platform === 'win32') {
+    electronPath += '.cmd';
+}
+
+var appPath = path.join(__dirname, '..');
 
 let app;
 
@@ -8,9 +14,10 @@ beforeAll(() => {
   app = new Application({
     path: electronPath,
 
-    args: [path.join(__dirname, "../../")]
+    args: [appPath]
   });
 
+  console.log('The APP: ', app);
   return app.start();
 }, 15000);
 

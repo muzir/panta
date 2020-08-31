@@ -11,7 +11,7 @@
   "scripts": {
     "postinstall": "install-app-deps",
     "start": "npm install && electron .",
-    "test" : "jest",
+    "test": "jest",
     "pack": "electron-builder --dir",
     "dist": "electron-builder"
   },
