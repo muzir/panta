@@ -1,39 +1,21 @@
-// Integration test suite
-const path = require("path");
-const spectron = require("spectron");
+const Application = require("spectron").Application;
 const electronPath = require("electron");
+const path = require("path");
 const clipboardy = require('clipboardy')
 
-const app = new spectron.Application({
-  path: electronPath,
-  args: [path.join(__dirname, "..")]
-});
+let app;
 
-jest.setTimeout(30000)
-
-function sleep(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
+jest.setTimeout(60000)
 
 beforeAll(() => {
+  app = new Application({
+    path: electronPath,
+
+    args: [path.join(__dirname, "../")]
+  });
+
   return app.start();
 }, 15000);
-
-
-test("Displays App window", async function () {
-  let windowCount = await app.client.getWindowCount();
-
-  expect(windowCount).toBe(1);
-});
-
-test("test first element exist after write to clipboard", async function () {
-  clipboardy.writeSync('pasta')
-  app.client.waitUntilWindowLoaded()
-  app.client.waitUntilTextExists('#1', 'pasta', 1000)
-  await sleep(2000);
-  const clippingText = await app.client.getText('#1')
-  console.log('The text content is ' + clippingText)
-});
 
 afterAll(function () {
   if (app && app.isRunning()) {
@@ -41,3 +23,15 @@ afterAll(function () {
   }
 });
 
+test("Displays App window", async function () {
+  let windowCount = await app.client.getWindowCount();
+
+  expect(windowCount).toBe(1);
+});
+
+test("first element listed in items after write to clipboard", async function () {
+  clipboardy.writeSync('💖 pasta!')
+  const firstElement = await app.client.$("//*[@id=\"1\"]");
+  let firstElementText = await firstElement.getText();
+  expect(firstElementText).toBe("💖 pasta!");
+});
