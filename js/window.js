@@ -61,8 +61,10 @@ function isNewItemCopied(latestCopyValue) {
         clipboardHistoryRepository.getLastElement()
             .then((row) => {
                 let lastItemValue = row && row.info
-                resolve((lastItemValue == undefined && (latestCopyValue != '' || latestCopyValue != undefined))
-                    || (lastItemValue != undefined && lastItemValue != latestCopyValue))
+                let isFirstElement = lastItemValue == undefined
+                console.log('lastItemValue:' + lastItemValue)
+                resolve((isFirstElement && latestCopyValue && latestCopyValue != '') 
+                || (lastItemValue && latestCopyValue && lastItemValue != latestCopyValue))
             })
     })
 }
@@ -112,7 +114,6 @@ function itemOnClickHandler(id) {
 function itemOnKeyPressHandler(event) {
     // Number 13 is the "Enter" key on the keyboard
     if (event.keyCode === 13) {
-        // Cancel the default action, if needed
         event.preventDefault()
         itemOnClickHandler(event.target.id)
     }
