@@ -9,6 +9,8 @@ const app = new spectron.Application({
   args: [path.join(__dirname, "..")]
 });
 
+jest.setTimeout(30000)
+
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
@@ -24,7 +26,7 @@ test("Displays App window", async function () {
   expect(windowCount).toBe(1);
 });
 
-test("random test", async function () {
+test("test first element exist after write to clipboard", async function () {
   clipboardy.writeSync('pasta')
   app.client.waitUntilWindowLoaded()
   app.client.waitUntilTextExists('#1', 'pasta', 1000)
