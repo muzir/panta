@@ -5,8 +5,6 @@ const clipboardy = require('clipboardy')
 
 let app;
 
-jest.setTimeout(60000)
-
 beforeAll(() => {
   app = new Application({
     path: electronPath,
