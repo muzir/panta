@@ -18,7 +18,7 @@ function createWindow() {
   win.on('blur', () => { win && win.hide() })
 
   // Open the DevTools.
-  // win.webContents.openDevTools()
+  /win.webContents.openDevTools()
 
   // Register a 'CommandOrControl+1' shortcut listener.
   globalShortcut.register('CmdOrCtrl+1', () => {

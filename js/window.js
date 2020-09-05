@@ -11,6 +11,10 @@ const userDataPath = (electron.app || electron.remote.app).getPath('userData')
 const dao = new AppDAO(userDataPath + '/panta.db')
 const clipboardHistoryRepository = new ClipboardHistoryRepository(dao)
 
+if (process.env.PROFILE === 'integration') {
+    console.log('WORKS')
+}
+
 window.onload = () => {
     clipboardHistoryRepository.createTable()
         .then(() => loadItems())
@@ -63,8 +67,8 @@ function isNewItemCopied(latestCopyValue) {
                 let lastItemValue = row && row.info
                 let isFirstElement = lastItemValue == undefined
                 console.log('lastItemValue:' + lastItemValue)
-                resolve((isFirstElement && latestCopyValue && latestCopyValue != '') 
-                || (lastItemValue && latestCopyValue && lastItemValue != latestCopyValue))
+                resolve((isFirstElement && latestCopyValue && latestCopyValue != '')
+                    || (lastItemValue && latestCopyValue && lastItemValue != latestCopyValue))
             })
     })
 }
