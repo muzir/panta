@@ -9,7 +9,7 @@ panta is a simple clipboard manager which aims to run in Linux, Mac and Windows.
 - When you copy text it saves the text as history item and keep it for you. 
 - You can search in textbox and when select any item by mouse click or enter key then it save it to your clipboard as latest item. 
 - You can paste any item from your history after select it. 
-- When you click `(Command + tab)`/`Ctrl + tab` panta will go hiden mode.
+- When you click `(Command + tab)`/`Ctrl + tab` panta will go hidden mode.
 
 ![](https://raw.githubusercontent.com/muzir/panta/master/assets/gif/panta_how_to.gif "How to use panta")
 
