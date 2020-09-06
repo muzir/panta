@@ -5,7 +5,10 @@ const clipboardy = require('clipboardy')
 
 let app;
 
-beforeAll(() => {
+jest.setTimeout(60000)
+process.env.PROFILE = 'integration'
+
+beforeEach(() => {
   app = new Application({
     path: electronPath,
 
@@ -15,11 +18,15 @@ beforeAll(() => {
   return app.start();
 }, 15000);
 
-afterAll(function () {
+afterEach(function () {
   if (app && app.isRunning()) {
     return app.stop();
   }
 });
+
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
 
 test("Displays App window", async function () {
   let windowCount = await app.client.getWindowCount();
@@ -29,7 +36,8 @@ test("Displays App window", async function () {
 
 test("first element listed in items after write to clipboard", async function () {
   clipboardy.writeSync('💖 pasta!')
+  await sleep(200)
   const firstElement = await app.client.$("//*[@id=\"1\"]");
   let firstElementText = await firstElement.getText();
-  expect(firstElementText).toBe("💖 pasta!");
+  expect(firstElementText).toBe('💖 pasta!');
 });

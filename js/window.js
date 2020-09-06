@@ -12,9 +12,37 @@ const dao = new AppDAO(userDataPath + '/panta.db')
 const clipboardHistoryRepository = new ClipboardHistoryRepository(dao)
 
 window.onload = () => {
-    clipboardHistoryRepository.createTable()
-        .then(() => loadItems())
-        .then(() => listenClipboardOnChange())
+    createClipboardHistoryTableIfNotExist()
+        .then(applyProfileChanges)
+        .then(() => {
+            listenClipboardOnChange()
+        }).catch(function (e) {
+            console.log("Error in window onload!")
+        });
+}
+
+function createClipboardHistoryTableIfNotExist() {
+    return clipboardHistoryRepository.createTable()
+        .then(() => {
+            return isTestProfileActive()
+        })
+
+    function isTestProfileActive() {
+        return Promise.resolve(process.env.PROFILE === 'integration');
+    }
+}
+
+function applyProfileChanges(value) {
+    if (value) {
+        return applyTestProfileChanges();
+    } else {
+        return loadItems()
+    }
+
+    function applyTestProfileChanges() {
+        clipboardy.writeSync('');
+        return clipboardHistoryRepository.deleteAll();
+    }
 }
 
 function loadItems() {
@@ -62,9 +90,9 @@ function isNewItemCopied(latestCopyValue) {
             .then((row) => {
                 let lastItemValue = row && row.info
                 let isFirstElement = lastItemValue == undefined
-                console.log('lastItemValue:' + lastItemValue)
-                resolve((isFirstElement && latestCopyValue && latestCopyValue != '') 
-                || (lastItemValue && latestCopyValue && lastItemValue != latestCopyValue))
+                let conditionOne = (isFirstElement && latestCopyValue && latestCopyValue != '')
+                let conditionTwo = (lastItemValue && latestCopyValue && lastItemValue != latestCopyValue)
+                resolve(conditionOne || conditionTwo)
             })
     })
 }
