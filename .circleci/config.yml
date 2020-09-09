@@ -30,7 +30,7 @@ jobs:
       - run:
           command: |
             mkdir -p /tmp/dist
-            cp panta.* /tmp/dist
+            cp ./dist/panta.* /tmp/dist
           when: always
       - store_artifacts:
           path: /tmp/dist
