@@ -30,7 +30,13 @@ jobs:
       - run:
           command: |
             mkdir -p /tmp/dist
-            cp ./dist/panta-* /tmp/dist
-          when: always
+            cp ./dist/panta_*.deb /tmp/dist
       - store_artifacts:
           path: /tmp/dist
+  deploy_to_production:
+    requires:
+      - build
+    filters:
+      branches:
+        only:
+          - master
