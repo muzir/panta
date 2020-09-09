@@ -21,6 +21,15 @@ jobs:
       - run:
           name: Run tests
           command: npm run test
+  deploy_to_production:
+    working_directory: ~/repo
+    requires:
+      - build
+    filters:
+      branches:
+        only:
+          - master
+    steps:
       - run:
           name: Run package
           command: npm run package
@@ -33,10 +42,4 @@ jobs:
             cp ./dist/panta_*.deb /tmp/dist
       - store_artifacts:
           path: /tmp/dist
-  deploy_to_production:
-    requires:
-      - build
-    filters:
-      branches:
-        only:
-          - master
+   
