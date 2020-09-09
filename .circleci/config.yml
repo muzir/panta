@@ -21,3 +21,6 @@ jobs:
       - run:
           name: Run tests
           command: npm run test
+      - run:
+          name: Run package
+          command: npm run package
