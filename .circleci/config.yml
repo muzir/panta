@@ -21,7 +21,7 @@ jobs:
       - run:
           name: Run tests
           command: npm run test
-  deploy_to_production:
+  package:
     working_directory: ~/repo
     docker:
       - image: circleci/node:11-browsers
@@ -45,11 +45,11 @@ workflows:
   build_and_package:
     jobs:
       - build
-      - deploy_to_production:
-        requires:
+      - package:
+          requires:
             - build
-        filters:
-          branches:
-            only:
-              - master
+          filters:
+            branches:
+              only:
+                - master
    
