@@ -3,6 +3,7 @@
   "version": "0.1.1",
   "license": "Apache-2.0",
   "description": "simple clipboard utility program",
+  "homepage": "https://github.com/muzir/panta",
   "author": {
     "name": "muzir",
     "email": "erhun.baycelik@gmail.com"
@@ -13,7 +14,7 @@
     "start": "npm install && electron .",
     "test": "jest",
     "pack": "electron-builder --dir",
-    "dist": "electron-builder"
+    "package": "electron-builder"
   },
   "build": {
     "appId": "panta",
