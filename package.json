@@ -13,7 +13,7 @@
     "start": "npm install && electron .",
     "test": "jest",
     "pack": "electron-builder --dir",
-    "dist": "electron-builder"
+    "package": "electron-builder"
   },
   "build": {
     "appId": "panta",
