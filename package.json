@@ -3,6 +3,7 @@
   "version": "0.1.1",
   "license": "Apache-2.0",
   "description": "simple clipboard utility program",
+  "homepage": "https://github.com/muzir/panta",
   "author": {
     "name": "muzir",
     "email": "erhun.baycelik@gmail.com"
