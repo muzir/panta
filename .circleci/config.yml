@@ -23,13 +23,10 @@ jobs:
           command: npm run test
   deploy_to_production:
     working_directory: ~/repo
-    requires:
-      - build
-    filters:
-      branches:
-        only:
-          - master
+    docker:
+      - image: circleci/node:11-browsers
     steps:
+      - checkout
       - run:
           name: Run package
           command: npm run package
@@ -42,4 +39,17 @@ jobs:
             cp ./dist/panta_*.deb /tmp/dist
       - store_artifacts:
           path: /tmp/dist
+
+workflows:
+  version: 2.1
+  build_and_package:
+    jobs:
+      - build
+      - deploy_to_production:
+        requires:
+            - build
+        filters:
+          branches:
+            only:
+              - master
    
