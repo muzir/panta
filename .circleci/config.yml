@@ -26,11 +26,11 @@ jobs:
           command: npm run package
       - run:
           name: Run ls
-          command: ls
+          command: ls ./dist/
       - run:
           command: |
             mkdir -p /tmp/dist
-            cp ./dist/panta.* /tmp/dist
+            cp ./dist/panta-* /tmp/dist
           when: always
       - store_artifacts:
           path: /tmp/dist
