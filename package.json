@@ -55,7 +55,7 @@
     "sqlite3": "^5.0.0"
   },
   "devDependencies": {
-    "electron": "^9.1.2",
+    "electron": "^9.3.1",
     "electron-builder": "^22.8.0",
     "jest": "^26.4.2",
     "spectron": "^11.1.0"
