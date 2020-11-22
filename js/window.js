@@ -10,8 +10,10 @@ let deleteItemId
 const userDataPath = (electron.app || electron.remote.app).getPath('userData')
 const dao = new AppDAO(userDataPath + '/panta.db')
 const clipboardHistoryRepository = new ClipboardHistoryRepository(dao)
+const RETENTION_PERIOD_IN_DAYS = 30
 
 window.onload = () => {
+    deleteRecordsOlderThanRetentionPeriod()
     createClipboardHistoryTableIfNotExist()
         .then(applyProfileChanges)
         .then(() => {
@@ -19,6 +21,14 @@ window.onload = () => {
         }).catch(function (e) {
             console.log("Error in window onload!")
         });
+}
+
+function deleteRecordsOlderThanRetentionPeriod(){
+    /* RETENTION_PERIOD_IN_DAYS days calculation */
+    let dateOffset = (24*60*60*1000) * RETENTION_PERIOD_IN_DAYS
+    let retentionDate = new Date()
+    retentionDate.setTime(retentionDate.getTime() - dateOffset)
+    clipboardHistoryRepository.deleteByRetentionPeriod(retentionDate)
 }
 
 function createClipboardHistoryTableIfNotExist() {

@@ -20,6 +20,12 @@ class ClipboardHistoryRepository {
             [id])
     }
 
+    deleteByRetentionPeriod(retentionDate) {
+        return this.dao.run(
+            "DELETE FROM clipboard_history WHERE dateCreated < ?",
+            [retentionDate])
+    }
+
     deleteAll() {
         return this.dao.run(
             "DELETE FROM clipboard_history WHERE 1=1",
