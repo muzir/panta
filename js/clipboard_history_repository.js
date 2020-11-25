@@ -26,12 +26,6 @@ class ClipboardHistoryRepository {
             [retentionDate])
     }
 
-    deleteAll() {
-        return this.dao.run(
-            "DELETE FROM clipboard_history WHERE 1=1",
-            [])
-    }
-
     getById(id) {
         return this.dao.get(
             "SELECT info FROM clipboard_history WHERE id=?",

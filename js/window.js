@@ -13,7 +13,6 @@ const clipboardHistoryRepository = new ClipboardHistoryRepository(dao)
 const RETENTION_PERIOD_IN_DAYS = 30
 
 window.onload = () => {
-    deleteRecordsOlderThanRetentionPeriod()
     createClipboardHistoryTableIfNotExist()
         .then(applyProfileChanges)
         .then(() => {
@@ -23,12 +22,14 @@ window.onload = () => {
         });
 }
 
-function deleteRecordsOlderThanRetentionPeriod(){
+function deleteRecordsOlderThanRetentionPeriod() {
     /* RETENTION_PERIOD_IN_DAYS days calculation */
-    let dateOffset = (24*60*60*1000) * RETENTION_PERIOD_IN_DAYS
-    let retentionDate = new Date()
-    retentionDate.setTime(retentionDate.getTime() - dateOffset)
-    clipboardHistoryRepository.deleteByRetentionPeriod(retentionDate)
+    let dateOffset = (24 * 60 * 60 * 1000) * RETENTION_PERIOD_IN_DAYS
+    let retentionDate = new Date(Date.now())
+    if (process.env.PROFILE !== 'integration') {
+        retentionDate.setTime(retentionDate.getTime() - dateOffset)
+    }
+    return clipboardHistoryRepository.deleteByRetentionPeriod(retentionDate)
 }
 
 function createClipboardHistoryTableIfNotExist() {
@@ -51,7 +52,7 @@ function applyProfileChanges(value) {
 
     function applyTestProfileChanges() {
         clipboardy.writeSync('');
-        return clipboardHistoryRepository.deleteAll();
+        return deleteRecordsOlderThanRetentionPeriod()
     }
 }
 
@@ -110,7 +111,7 @@ function isNewItemCopied(latestCopyValue) {
 
 function createItem(param) {
     return new Promise((resolve) => {
-        let dateCreated = new Date().getTime()
+        let dateCreated = new Date(Date.now()).getTime()
         let item = { dateCreated: dateCreated, info: param }
         resolve(item)
     })
