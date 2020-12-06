@@ -10,15 +10,27 @@ let deleteItemId
 const userDataPath = (electron.app || electron.remote.app).getPath('userData')
 const dao = new AppDAO(userDataPath + '/panta.db')
 const clipboardHistoryRepository = new ClipboardHistoryRepository(dao)
+const RETENTION_PERIOD_IN_DAYS = 30
 
 window.onload = () => {
     createClipboardHistoryTableIfNotExist()
-        .then(applyProfileChanges)
+        .then(deleteRecordsOlderThanRetentionPeriod)
+        .then(() => {applyProfileChanges()})
         .then(() => {
             listenClipboardOnChange()
         }).catch(function (e) {
             console.log("Error in window onload!")
         });
+}
+
+function deleteRecordsOlderThanRetentionPeriod() {
+    /* RETENTION_PERIOD_IN_DAYS days calculation */
+    let dateOffset = (24 * 60 * 60 * 1000) * RETENTION_PERIOD_IN_DAYS
+    let retentionDate = new Date(Date.now())
+    if (process.env.PROFILE !== 'integration') {
+        retentionDate.setTime(retentionDate.getTime() - dateOffset)
+    }
+    return clipboardHistoryRepository.deleteByRetentionPeriod(retentionDate)
 }
 
 function createClipboardHistoryTableIfNotExist() {
@@ -34,14 +46,13 @@ function createClipboardHistoryTableIfNotExist() {
 
 function applyProfileChanges(value) {
     if (value) {
-        return applyTestProfileChanges();
+        return applyTestProfileChanges()
     } else {
         return loadItems()
     }
 
     function applyTestProfileChanges() {
-        clipboardy.writeSync('');
-        return clipboardHistoryRepository.deleteAll();
+        clipboardy.writeSync('')
     }
 }
 
@@ -100,7 +111,7 @@ function isNewItemCopied(latestCopyValue) {
 
 function createItem(param) {
     return new Promise((resolve) => {
-        let dateCreated = new Date().getTime()
+        let dateCreated = new Date(Date.now()).getTime()
         let item = { dateCreated: dateCreated, info: param }
         resolve(item)
     })

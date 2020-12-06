@@ -20,10 +20,10 @@ class ClipboardHistoryRepository {
             [id])
     }
 
-    deleteAll() {
+    deleteByRetentionPeriod(retentionDate) {
         return this.dao.run(
-            "DELETE FROM clipboard_history WHERE 1=1",
-            [])
+            "DELETE FROM clipboard_history WHERE dateCreated < ?",
+            [retentionDate])
     }
 
     getById(id) {
