@@ -15,6 +15,6 @@ panta is a simple clipboard manager which aims to run in Linux, Mac and Windows.
 
 # Download
 
-[Mac release](https://github.com/muzir/panta/releases/download/v0.1.0/panta-0.1.0.dmg "Mac release")
+[Mac release](https://github.com/muzir/panta/releases/download/v0.1.2/panta-0.1.2.dmg "Mac release")
 
-[Linux release](https://github.com/muzir/panta/releases/download/v0.1.0/panta_0.1.0_amd64.deb "Linux release")
+[Linux release](https://github.com/muzir/panta/releases/download/v0.1.2/panta_0.1.2_amd64.deb "Linux release")
