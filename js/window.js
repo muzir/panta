@@ -14,7 +14,8 @@ const RETENTION_PERIOD_IN_DAYS = 30
 
 window.onload = () => {
     createClipboardHistoryTableIfNotExist()
-        .then(applyProfileChanges)
+        .then(deleteRecordsOlderThanRetentionPeriod)
+        .then(() => {applyProfileChanges()})
         .then(() => {
             listenClipboardOnChange()
         }).catch(function (e) {
@@ -45,14 +46,13 @@ function createClipboardHistoryTableIfNotExist() {
 
 function applyProfileChanges(value) {
     if (value) {
-        return applyTestProfileChanges();
+        return applyTestProfileChanges()
     } else {
         return loadItems()
     }
 
     function applyTestProfileChanges() {
-        clipboardy.writeSync('');
-        return deleteRecordsOlderThanRetentionPeriod()
+        clipboardy.writeSync('')
     }
 }
 
