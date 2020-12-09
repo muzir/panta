@@ -9,8 +9,13 @@ function createWindow() {
     height: 600,
     webPreferences: {
       nodeIntegration: true
-    }
+    },
+    title: app.getName() + ' v' + app.getVersion()
   })
+
+  win.on('page-title-updated', function (e) {
+    e.preventDefault()
+  });
 
   // and load the index.html of the app.
   win.loadFile('index.html')
