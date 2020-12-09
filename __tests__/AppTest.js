@@ -1,5 +1,5 @@
 const Application = require("spectron").Application;
-const electronPath = require("electron");
+const electron = require("electron");
 const path = require("path");
 const clipboardy = require('clipboardy')
 
@@ -10,7 +10,7 @@ process.env.PROFILE = 'integration'
 
 beforeEach(() => {
   app = new Application({
-    path: electronPath,
+    path: electron,
 
     args: [path.join(__dirname, "../")]
   });
@@ -40,4 +40,10 @@ test("first element listed in items after write to clipboard", async function ()
   const firstElement = await app.client.$("//*[@id=\"1\"]");
   let firstElementText = await firstElement.getText();
   expect(firstElementText).toBe('💖 pasta!');
+});
+
+test("Displays App title with app name and version", async function () {
+  app.browserWindow.getTitle().then((title)=>{
+    expect(title).toBe('panta v0.1.2');  
+  })
 });
