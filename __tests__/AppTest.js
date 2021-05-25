@@ -44,6 +44,6 @@ test("first element listed in items after write to clipboard", async function ()
 
 test("Displays App title with app name and version", async function () {
   app.browserWindow.getTitle().then((title)=>{
-    expect(title).toBe('panta v0.1.2');  
+    expect(title).toBe('panta v0.1.3');  
   })
 });
