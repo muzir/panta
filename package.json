@@ -58,6 +58,6 @@
     "electron": "^11.5.0",
     "electron-builder": "^22.8.0",
     "jest": "^26.4.2",
-    "spectron": "^11.1.0"
+    "spectron": "^13.0.0"
   }
 }
