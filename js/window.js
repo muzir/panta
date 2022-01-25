@@ -1,19 +1,21 @@
+const { ipcRenderer } = require('electron');
 const clipboardy = require('clipboardy')
 const AppDAO = require('./js/dao')
+
 const ClipboardHistoryRepository = require('./js/clipboard_history_repository')
-const electron = require('electron')
-const { ipcRenderer } = require('electron');
+
 
 
 let deleteItemId
-
-const userDataPath = (electron.app || electron.remote.app).getPath('userData')
-const dao = new AppDAO(userDataPath + '/panta.db')
-const clipboardHistoryRepository = new ClipboardHistoryRepository(dao)
+let clipboardHistoryRepository
 const RETENTION_PERIOD_IN_DAYS = 30
 
 window.onload = () => {
-    createClipboardHistoryTableIfNotExist()
+    ipcRenderer.invoke('read-user-data', 'fileName.txt')
+    .then(userDataPath => {
+        const dao = new AppDAO(userDataPath + '/panta.db')
+        clipboardHistoryRepository = new ClipboardHistoryRepository(dao)
+        createClipboardHistoryTableIfNotExist()
         .then(deleteRecordsOlderThanRetentionPeriod)
         .then(() => {applyProfileChanges()})
         .then(() => {
@@ -21,6 +23,7 @@ window.onload = () => {
         }).catch(function (e) {
             console.log("Error in window onload!")
         });
+    });
 }
 
 function deleteRecordsOlderThanRetentionPeriod() {
