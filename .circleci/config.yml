@@ -24,7 +24,7 @@ jobs:
   package:
     working_directory: ~/repo
     docker:
-      - image: circleci/node:11-browsers
+      - image: circleci/node:14.18.2-browsers
     steps:
       - checkout
       - run:
