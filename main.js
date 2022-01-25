@@ -3,16 +3,19 @@ const { app, BrowserWindow, globalShortcut, ipcMain } = require('electron')
 let win
 
 function createWindow() {
+  // https://github.com/electron-userland/spectron/issues/693
+  const isRemoteModuleEnabled = process.env.PROFILE === 'integration'
   // Create the browser window.
   win = new BrowserWindow({
     width: 400,
     height: 600,
     webPreferences: {
-      nodeIntegration: true
+      nodeIntegration: true,
+      enableRemoteModule: isRemoteModuleEnabled
     },
     title: app.getName() + ' v' + app.getVersion()
   })
-
+  
   win.on('page-title-updated', function (e) {
     e.preventDefault()
   });
@@ -32,6 +35,10 @@ function createWindow() {
   })
   ipcMain.on('hide', () => {
     app && app.hide()
+  })
+  ipcMain.handle('read-user-data', async (event, fileName) => {
+    const path = app.getPath('userData')
+    return path
   })
 }
 
