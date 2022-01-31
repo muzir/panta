@@ -4,8 +4,6 @@ const AppDAO = require('./js/dao')
 
 const ClipboardHistoryRepository = require('./js/clipboard_history_repository')
 
-
-
 let deleteItemId
 let clipboardHistoryRepository
 const RETENTION_PERIOD_IN_DAYS = 30

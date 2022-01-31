@@ -1,49 +1,41 @@
-const Application = require("spectron").Application;
-const electron = require("electron");
+const { _electron: electron } = require('playwright');
 const path = require("path");
 const clipboardy = require('clipboardy')
 
-let app;
+let electronApp;
 
-jest.setTimeout(60000)
+jest.setTimeout(2000)
 process.env.PROFILE = 'integration'
 
-beforeEach(() => {
-  app = new Application({
-    path: electron,
-
-    args: [path.join(__dirname, "../")]
-  });
-
-  return app.start();
+beforeEach(async () => {
+  electronApp =  await electron.launch({ args: ['.'],  });
 }, 15000);
 
-afterEach(function () {
-  if (app && app.isRunning()) {
-    return app.stop();
-  }
-});
-
-function sleep(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
 
 test("Displays App window", async function () {
-  let windowCount = await app.client.getWindowCount();
-
-  expect(windowCount).toBe(1);
+  let windowCount = await electronApp.windows().length;
+  expect(windowCount === 1).toBeTruthy()
 });
 
 test("first element listed in items after write to clipboard", async function () {
   clipboardy.writeSync('💖 pasta!')
-  await sleep(200)
-  const firstElement = await app.client.$("//*[@id=\"1\"]");
-  let firstElementText = await firstElement.getText();
-  expect(firstElementText).toBe('💖 pasta!');
+  const window = await electronApp.firstWindow();
+  const element = await window.locator('xpath=/html/body/div/div/ul/div/li[1]/div/p');
+  const value = await element.innerText()
+  expect(value === '💖 pasta!').toBeTruthy();
 });
 
-test("Displays App title with app name and version", async function () {
-  app.browserWindow.getTitle().then((title)=>{
-    expect(title).toBe('panta v0.1.3');  
-  })
+test("Test app name and version", async () => {
+  const appName = await electronApp.evaluate(async ({ app }) => {
+    return  app.getName();
+  });
+  const appVersion = await electronApp.evaluate(async ({ app }) => {
+    return  app.getVersion();
+  });
+  expect(appVersion).toBe("0.1.3");
+  expect(appName).toBe("panta");
+});
+
+afterEach(async () => {
+  await electronApp.close();
 });
