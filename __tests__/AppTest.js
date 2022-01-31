@@ -4,7 +4,7 @@ const clipboardy = require('clipboardy')
 
 let electronApp;
 
-jest.setTimeout(2000)
+jest.setTimeout(1000)
 process.env.PROFILE = 'integration'
 
 beforeEach(async () => {
@@ -32,7 +32,7 @@ test("Test app name and version", async () => {
   const appVersion = await electronApp.evaluate(async ({ app }) => {
     return  app.getVersion();
   });
-  expect(appVersion).toBe("0.1.3");
+  expect(appVersion).toBe("0.1.4");
   expect(appName).toBe("panta");
 });
 
