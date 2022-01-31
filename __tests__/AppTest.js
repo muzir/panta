@@ -2,34 +2,40 @@ const { _electron: electron } = require('playwright');
 const path = require("path");
 const clipboardy = require('clipboardy')
 
-let app;
+let electronApp;
 
-jest.setTimeout(10000)
+jest.setTimeout(2000)
 process.env.PROFILE = 'integration'
 
-function sleep(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
-
 beforeEach(async () => {
-    app =  await electron.launch({ args: ['main.js'] });
+  electronApp =  await electron.launch({ args: ['.'],  });
 }, 15000);
 
 
-
 test("Displays App window", async function () {
-  let windowCount = await app.windows().length;
+  let windowCount = await electronApp.windows().length;
   expect(windowCount === 1).toBeTruthy()
 });
 
 test("first element listed in items after write to clipboard", async function () {
   clipboardy.writeSync('💖 pasta!')
-  await sleep(200)
-  const window = await app.firstWindow();
-  const value = await window.locator('//*[@id=\"1\"]').inputValue();
+  const window = await electronApp.firstWindow();
+  const element = await window.locator('xpath=/html/body/div/div/ul/div/li[1]/div/p');
+  const value = await element.innerText()
   expect(value === '💖 pasta!').toBeTruthy();
 });
 
+test("Test app name and version", async () => {
+  const appName = await electronApp.evaluate(async ({ app }) => {
+    return  app.getName();
+  });
+  const appVersion = await electronApp.evaluate(async ({ app }) => {
+    return  app.getVersion();
+  });
+  expect(appVersion).toBe("0.1.3");
+  expect(appName).toBe("panta");
+});
+
 afterEach(async () => {
-  await app.close();
+  await electronApp.close();
 });
