@@ -25,3 +25,5 @@ panta is a simple clipboard manager which aims to run in Linux, Mac and Windows.
 To run the app `npm start`.
 
 To run the tests `npm test`.
+
+To package the app then `npm run package`
