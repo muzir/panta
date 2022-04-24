@@ -5,14 +5,11 @@ class ClipboardHistoryRepository {
 
     createTable() {
         const sql = "CREATE TABLE IF NOT EXISTS clipboard_history (id INTEGER PRIMARY KEY AUTOINCREMENT, info TEXT, dateCreated INTEGER)"
-        return this.dao.run(sql).then(() => {
-            return this.createIndex()
-        })
-    }
-
-    createIndex(){
-        const sql = "CREATE UNIQUE INDEX IF NOT EXISTS idx_info_clipboard_history ON clipboard_history (info)"
         return this.dao.run(sql)
+        .then(() => {
+            const uniqueIndexSql = "CREATE UNIQUE INDEX IF NOT EXISTS idx_info_clipboard_history ON clipboard_history (info)"
+            return this.dao.run(uniqueIndexSql)
+        })
     }
 
     create(clipboard_history) {

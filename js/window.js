@@ -13,7 +13,7 @@ window.onload = () => {
     .then(userDataPath => {
         const dao = new AppDAO(userDataPath + '/panta.db')
         clipboardHistoryRepository = new ClipboardHistoryRepository(dao)
-        createClipboardHistoryTableIfNotExist()
+        createClipboardHistoryTableIfNotExists()
         .then(deleteRecordsOlderThanRetentionPeriod)
         .then(() => {applyProfileChanges()})
         .then(() => {
@@ -34,7 +34,7 @@ function deleteRecordsOlderThanRetentionPeriod() {
     return clipboardHistoryRepository.deleteByRetentionPeriod(retentionDate)
 }
 
-function createClipboardHistoryTableIfNotExist() {
+function createClipboardHistoryTableIfNotExists() {
     return clipboardHistoryRepository.createTable()
         .then(() => {
             return isTestProfileActive()
