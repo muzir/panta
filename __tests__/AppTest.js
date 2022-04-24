@@ -32,7 +32,7 @@ test("Test app name and version", async () => {
   const appVersion = await electronApp.evaluate(async ({ app }) => {
     return  app.getVersion();
   });
-  expect(appVersion).toBe("0.1.5");
+  expect(appVersion).toBe("0.1.6");
   expect(appName).toBe("panta");
 });
 
