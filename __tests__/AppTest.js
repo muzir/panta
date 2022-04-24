@@ -7,6 +7,8 @@ let electronApp;
 jest.setTimeout(1000)
 process.env.PROFILE = 'integration'
 
+const delay = ms => new Promise(res => setTimeout(res, ms));
+
 beforeEach(async () => {
   electronApp =  await electron.launch({ args: ['.'],  });
 }, 15000);
@@ -25,6 +27,19 @@ test("first element listed in items after write to clipboard", async function ()
   expect(value === '💖 pasta!').toBeTruthy();
 });
 
+test("same element listed once if write the clipboard multiple times", async function () {
+  clipboardy.writeSync('💖 pasta!')
+  await delay(250);
+  clipboardy.writeSync('💖 pasta1!')
+  await delay(250);
+  clipboardy.writeSync('💖 pasta!')
+  await delay(250);
+  const window = await electronApp.firstWindow();
+  const element = await window.locator('xpath=/html/body/div/div/ul/div/li');
+  const value = await element.count()
+  expect(value).toEqual(2);
+});
+
 test("Test app name and version", async () => {
   const appName = await electronApp.evaluate(async ({ app }) => {
     return  app.getName();
@@ -32,7 +47,7 @@ test("Test app name and version", async () => {
   const appVersion = await electronApp.evaluate(async ({ app }) => {
     return  app.getVersion();
   });
-  expect(appVersion).toBe("0.1.5");
+  expect(appVersion).toBe("0.1.6");
   expect(appName).toBe("panta");
 });
 
