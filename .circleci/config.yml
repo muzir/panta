@@ -20,6 +20,12 @@ jobs:
           paths:
             - ./node_modules
       - run:
+          name: NPM version
+          command: npm --version
+      - run:
+          name: node version
+          command: node --version
+      - run:
           name: Run tests
           command: npm run test
   package:
