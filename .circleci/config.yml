@@ -26,8 +26,12 @@ jobs:
           name: node version
           command: node --version
       - run:
+          name: Run npx browserslist
+          command: npx browserslist@latest --update-db
+      - run:
           name: Run tests
           command: npm run test
+
   package:
     working_directory: ~/repo
     executor: node/default # use the default executor defined within the orb
