@@ -1,9 +1,10 @@
 version: 2.1
+orbs:
+  node: circleci/node@5.0.2
 jobs:
   build:
+    executor: node/default # use the default executor defined within the orb
     working_directory: ~/repo
-    docker:
-      - image: circleci/node:14.18.2-browsers
     steps:
       - checkout
       - run:
@@ -23,8 +24,7 @@ jobs:
           command: npm run test
   package:
     working_directory: ~/repo
-    docker:
-      - image: circleci/node:14.18.2-browsers
+    executor: node/default # use the default executor defined within the orb
     steps:
       - checkout
       - run:
