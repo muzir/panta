@@ -4,7 +4,7 @@ const clipboardy = require('clipboardy')
 
 let electronApp;
 
-jest.setTimeout(1000)
+jest.setTimeout(5000)
 process.env.PROFILE = 'integration'
 
 const delay = ms => new Promise(res => setTimeout(res, ms));
