@@ -1,10 +1,18 @@
 version: 2.1
+orbs:
+  browser-tools: circleci/browser-tools@1.1.0
 jobs:
   build:
     docker:
-      - image: circleci/node:14.18.2-browsers
+      - image: cimg/node:15.0.1-browsers
     working_directory: ~/repo
     steps:
+      - browser-tools/install-browser-tools
+      - checkout
+      - run: |
+          node --version
+          java --version
+          google-chrome --version
       - checkout
       - run:
           name: Update NPM
@@ -19,24 +27,20 @@ jobs:
           paths:
             - ./node_modules
       - run:
-          name: NPM version
-          command: npm --version
-      - run:
-          name: node version
-          command: node --version
-      - run:
-          name: Run npx browserslist
-          command: npx browserslist@latest --update-db
-      - run:
           name: Run tests
           command: npm run test
 
   package:
     working_directory: ~/repo
     docker:
-      - image: circleci/node:14.18.2-browsers
+      - image: cimg/node:15.0.1-browsers
     steps:
+      - browser-tools/install-browser-tools
       - checkout
+      - run: |
+          node --version
+          java --version
+          google-chrome --version
       - run:
           name: Update NPM
           command: "sudo npm install -g npm"
