@@ -46,7 +46,7 @@ test("Displays App window", async function () {
   page = await electronApp.firstWindow()
   let windowCount = await electronApp.windows().length;
 
-  await expect(windowCount === 1).toBeTruthy()
+  expect(windowCount === 1).toBeTruthy()
 });
 
 test('renders the first page', async () => {

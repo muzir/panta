@@ -32,8 +32,8 @@ export default defineConfig({
     trace: 'on-first-retry',
   },
 
-  // Each test is given 5 minutes.
-  timeout: 300000,
+  // Each test is given 30 seconds.
+  timeout: 30000,
 
   globalTeardown: './tests/teardown.js',
 
