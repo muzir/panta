@@ -56,11 +56,11 @@ test('renders the first page', async () => {
   await electronApp.evaluate(({ clipboard }, text) => {
     clipboard.writeText(text);
   }, clipboardText);
-  await delay(1000)
-  await expect(page.getByText('esek')).toBeVisible();
-  //const element = await page.getByText('esek');
-  //const text = await element.innerText();
-  //expect('esek' ).toBe(text);
+  await delay(3000)
+  //await expect(page.getByText('esek')).toBeVisible();
+  const element = await page.getByText('esek');
+  const value = await element.count()
+  expect(value).toEqual(1);
 })
 
 // test("same element listed once if write the clipboard multiple times", async function () {

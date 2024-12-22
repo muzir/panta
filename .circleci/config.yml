@@ -45,8 +45,8 @@ jobs:
           paths:
             - ./node_modules
       - run:
-          name: Run tests with debug and trace
-          command: DEBUG=pw:browser* npx playwright test --project=chromium --workers=2
+          name: Run tests 
+          command: npm run test
       - store_test_results:
           path: results.xml
   package:
