@@ -35,11 +35,16 @@ export default defineConfig({
   // Each test is given 5 minutes.
   timeout: 300000,
 
+  globalTeardown: './tests/teardown.js',
+
   /* Configure projects for major browsers */
   projects: [
     {
       name: 'chromium',
-      use: { ...devices['Desktop Chrome'] },
+      use: {
+        browserName: 'chromium',
+        headless: true, // Run tests in headless mode
+      },
     },
 
     // {
