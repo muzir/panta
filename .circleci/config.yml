@@ -7,10 +7,7 @@ jobs:
     working_directory: ~/repo
     docker:
       - image: cimg/node:23.5.0-browsers
-        resources:
-          limits:
-            memory: 4096MB
-            cpu: 2
+    resource_class: medium
     steps:
       - checkout
       - run: node --version
