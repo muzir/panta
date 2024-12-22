@@ -1,6 +1,6 @@
 {
   "name": "panta",
-  "version": "0.1.6",
+  "version": "0.2.0",
   "license": "Apache-2.0",
   "description": "simple clipboard utility program",
   "homepage": "https://github.com/muzir/panta",
@@ -12,7 +12,7 @@
   "scripts": {
     "postinstall": "install-app-deps",
     "start": "npm install && electron .",
-    "test": "jest",
+    "test": "npx playwright test --project=chromium",
     "pack": "electron-builder --dir",
     "package": "electron-builder"
   },
@@ -52,12 +52,13 @@
   ],
   "dependencies": {
     "clipboardy": "^2.3.0",
-    "sqlite3": "^5.0.0"
+    "sqlite3": "^5.1.7"
   },
   "devDependencies": {
+    "@playwright/test": "^1.49.1",
+    "@types/node": "^22.10.2",
     "electron": "^33.2.0",
     "electron-builder": "^25.1.8",
-    "jest": "^29.7.0",
-    "playwright": "^1.18.1"
+    "playwright": "^1.49.0"
   }
 }

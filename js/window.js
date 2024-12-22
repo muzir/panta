@@ -1,65 +1,20 @@
-const { ipcRenderer } = require('electron');
-const clipboardy = require('clipboardy')
-const AppDAO = require('./js/dao')
-
-const ClipboardHistoryRepository = require('./js/clipboard_history_repository')
 
 let deleteItemId
-let clipboardHistoryRepository
-const RETENTION_PERIOD_IN_DAYS = 30
+
 
 window.onload = () => {
-    ipcRenderer.invoke('read-user-data', 'fileName.txt')
-    .then(userDataPath => {
-        const dao = new AppDAO(userDataPath + '/panta.db')
-        clipboardHistoryRepository = new ClipboardHistoryRepository(dao)
-        createClipboardHistoryTableIfNotExists()
-        .then(deleteRecordsOlderThanRetentionPeriod)
-        .then(() => {applyProfileChanges()})
-        .then(() => {
+    window.api.send('toMain')
+        .then((event, data) => {
+            loadItems()
             listenClipboardOnChange()
         }).catch(function (e) {
-            console.log("Error in window onload!")
+            console.error("Error in window onload!" + e)
         });
-    });
-}
-
-function deleteRecordsOlderThanRetentionPeriod() {
-    /* RETENTION_PERIOD_IN_DAYS days calculation */
-    let dateOffset = (24 * 60 * 60 * 1000) * RETENTION_PERIOD_IN_DAYS
-    let retentionDate = new Date(Date.now())
-    if (process.env.PROFILE !== 'integration') {
-        retentionDate.setTime(retentionDate.getTime() - dateOffset)
-    }
-    return clipboardHistoryRepository.deleteByRetentionPeriod(retentionDate)
-}
-
-function createClipboardHistoryTableIfNotExists() {
-    return clipboardHistoryRepository.createTable()
-        .then(() => {
-            return isTestProfileActive()
-        })
-
-    function isTestProfileActive() {
-        return Promise.resolve(process.env.PROFILE === 'integration');
-    }
-}
-
-function applyProfileChanges(value) {
-    if (value) {
-        return applyTestProfileChanges()
-    } else {
-        return loadItems()
-    }
-
-    function applyTestProfileChanges() {
-        clipboardy.writeSync('')
-    }
 }
 
 function loadItems() {
-    clipboardHistoryRepository.getLastTenElements().then((rows) => {
-        setRowsToContent(rows)
+    window.api.getLastTenElements().then((response) => {
+        setRowsToContent(response.data)
     })
 }
 
@@ -79,32 +34,41 @@ function setRowsToContent(rows) {
 
 function listenClipboardOnChange() {
     setTimeout(function () {
-        let latestCopyValue = clipboardy.readSync()
-        isNewItemCopied(latestCopyValue).then((isNew) => {
-            if (isNew) {
-                applyNewItemChange(latestCopyValue)
-            }
-        })
-        listenClipboardOnChange()
-    }, 100)
+        window.api.readSync()
+            .then((response) => {
+                let value = response.data
+                isNewItemCopied(response.data)
+                    .then((isNew) => {
+                        if (isNew) {
+                            applyNewItemChange(value)
+                        }
+                    })
+                listenClipboardOnChange()
+            })
+    }, 500)
 }
 
 function applyNewItemChange(latestCopyValue) {
     createItem(latestCopyValue)
-        .then(newItem => saveValue(newItem))
-        .then(() => deleteItemId && clipboardHistoryRepository.delete(deleteItemId))
-        .then(() => loadItems())
+        .then(() => {
+            loadItems();
+            deleteItemId && window.api.delete(deleteItemId)
+            .then(() => {
+                loadItems();
+            })
+        })
 }
 
 function isNewItemCopied(latestCopyValue) {
     return new Promise((resolve) => {
-        clipboardHistoryRepository.getLastElement()
+        window.api.getLastElement()
             .then((row) => {
-                let lastItemValue = row && row.info
+                let lastItemValue = row && row.data && row.data.info
                 let isFirstElement = lastItemValue == undefined
                 let conditionOne = (isFirstElement && latestCopyValue && latestCopyValue != '')
                 let conditionTwo = (lastItemValue && latestCopyValue && lastItemValue != latestCopyValue)
-                resolve(conditionOne || conditionTwo)
+                let result = conditionOne || conditionTwo
+                resolve(result)
             })
     })
 }
@@ -114,13 +78,11 @@ function createItem(param) {
     return new Promise((resolve) => {
         let dateCreated = new Date(Date.now()).getTime()
         let item = { dateCreated: dateCreated, info: param }
-        resolve(item)
+        window.api.create(item)
+            .then((result) => {
+                resolve(item)
+            })
     })
-}
-
-function saveValue(item) {
-    clipboardHistoryRepository.create(item)
-    return item
 }
 
 function createRowHtmlFromItem(item, tabIndex) {
@@ -130,7 +92,6 @@ function createRowHtmlFromItem(item, tabIndex) {
         + replaceHtmlEscapeCharacter(item.info)
         + '</p></div></li>'
 }
-
 function replaceHtmlEscapeCharacter(str) {
     str = str.replace(/&/g, "&amp;")
     str = str.replace(/>/g, "&gt;")
@@ -141,14 +102,28 @@ function replaceHtmlEscapeCharacter(str) {
 }
 
 function itemOnClickHandler(id) {
-    clipboardHistoryRepository.getById(id)
-        .then((row) => {
-            let selectedValue = row.info
-            clipboardy.writeSync(selectedValue)
-            deleteItemId = id
-            cleanSearchBox()
-            hideWindow()
-        })
+    getById(id)
+        .then((response) => {
+            let selectedValue = response.data.info
+            window.api.writeSync(selectedValue)
+                deleteItemId = id
+                cleanSearchBox()
+                hideWindow()
+        }).catch((err) => {
+            console.error("Error in getById:", err);
+        });
+
+}
+
+function getById(id) {
+    return new Promise((resolve) => {
+        window.api.getById(id)
+            .then((row) => {
+                resolve(row)
+            }).catch((err) => {
+                console.error("Error in getById:", err);
+            });
+    })
 }
 
 function itemOnKeyPressHandler(event) {
@@ -160,8 +135,8 @@ function itemOnKeyPressHandler(event) {
 }
 
 function searchBoxOnChangeListener(event) {
-    clipboardHistoryRepository.getBySearchKey(event.target.value).then((rows) => {
-        setRowsToContent(rows)
+    window.api.getBySearchKey(event.target.value).then((rows) => {
+        setRowsToContent(rows.data)
     })
 }
 
@@ -171,5 +146,5 @@ function cleanSearchBox() {
 }
 
 function hideWindow() {
-    ipcRenderer.send('hide');
+    window.api.send('hide')
 }

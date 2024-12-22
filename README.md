@@ -27,3 +27,5 @@ To run the app `npm start`.
 To run the tests `npm test`.
 
 To package the app then `npm run package`
+
+To debug logging `console.log(JSON.stringify(response, null, 2));`
