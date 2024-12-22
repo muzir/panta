@@ -6,9 +6,10 @@ jobs:
   build:
     working_directory: ~/repo
     docker:
-      - image: cimg/node:20.5.0-browsers
+      - image: cimg/node:23.5.0-browsers
     steps:
       - checkout
+      - run: node --version
       - browser-tools/install-chrome
       - browser-tools/install-chromedriver
       - run:
