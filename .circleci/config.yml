@@ -10,11 +10,6 @@ jobs:
     steps:
       - checkout
       - run: node --version
-      - run:
-          name: Install Electron dependencies
-          command: |
-            sudo apt-get update
-            sudo apt-get install -y libgtk-3-0 libgbm-dev libnss3 libxss1 libasound2 libatk1.0-0 libatk-bridge2.0-0 libdrm2
       - browser-tools/install-chrome
       - browser-tools/install-chromedriver
       - run:
@@ -22,9 +17,6 @@ jobs:
             google-chrome --version
             chromedriver --version
           name: Check install
-      - run:
-          name: Install Dbus
-          command: "sudo apt-get install dbus"
       - run:
           name: Update NPM
           command: "sudo npm install -g npm"
