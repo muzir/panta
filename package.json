@@ -51,7 +51,7 @@
     "electron"
   ],
   "dependencies": {
-    "clipboardy": "^2.3.0",
+    "clipboardy": "^4.0.0",
     "sqlite3": "^5.1.7"
   },
   "devDependencies": {
