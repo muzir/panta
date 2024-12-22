@@ -24,6 +24,9 @@ jobs:
             chromedriver --version
           name: Check install
       - run:
+          name: Install Dbus
+          command: "sudo apt-get install dbus"
+      - run:
           name: Update NPM
           command: "sudo npm install -g npm"
       - restore_cache:

@@ -13,7 +13,8 @@ let electronApp: ElectronApplication
 test.beforeEach(async () => {
   // set the CI environment variable to true
   process.env.PROFILE = 'integration'
-  electronApp =  await electron.launch({ args: ['main.js'],  });
+  electronApp =  await electron.launch({ args: ['main.js', '--disable-gpu'],  });
+  
   await electronApp.evaluate(({ clipboard }, text) => {
       clipboard.writeText(text);
     }, '');
