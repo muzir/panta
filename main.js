@@ -11,13 +11,14 @@ const RETENTION_PERIOD_IN_DAYS = 30
 
 function createWindow() {
   // Create the browser window.
+  const isRemoteModuleEnabled = process.env.PROFILE === 'integration'
   win = new BrowserWindow({
     width: 400,
     height: 600,
     webPreferences: {
       nodeIntegration: false, // is default value after Electron v5
       contextIsolation: true, // protect against prototype pollution
-      enableRemoteModule: false, // turn off remote
+      enableRemoteModule: isRemoteModuleEnabled, // turn off remote
       preload: path.join(__dirname, "preload.js") // use a preload script
     },
     title: app.getName() + ' v' + app.getVersion()

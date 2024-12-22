@@ -5,24 +5,11 @@ let deleteItemId
 window.onload = () => {
     window.api.send('toMain')
         .then((event, data) => {
-            //applyProfileChanges()
             loadItems()
             listenClipboardOnChange()
         }).catch(function (e) {
             console.error("Error in window onload!" + e)
         });
-}
-
-function applyProfileChanges(value) {
-    if (value) {
-        return applyTestProfileChanges()
-    } else {
-        return loadItems()
-    }
-
-    function applyTestProfileChanges() {
-        window.api.writeSync('')
-    }
 }
 
 function loadItems() {
@@ -105,7 +92,6 @@ function createRowHtmlFromItem(item, tabIndex) {
         + replaceHtmlEscapeCharacter(item.info)
         + '</p></div></li>'
 }
-document.querySelector("#\\31 8938")
 function replaceHtmlEscapeCharacter(str) {
     str = str.replace(/&/g, "&amp;")
     str = str.replace(/>/g, "&gt;")
