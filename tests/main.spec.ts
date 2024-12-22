@@ -42,13 +42,13 @@ test.afterEach(async () => {
 
 
 
-// test("Displays App window", async function () {
-//   // Wait for at least one window to open
-//   page = await electronApp.firstWindow()
-//   let windowCount = await electronApp.windows().length;
+test("Displays App window", async function () {
+  // Wait for at least one window to open
+  page = await electronApp.firstWindow()
+  let windowCount = await electronApp.windows().length;
 
-//   expect(windowCount === 1).toBeTruthy()
-// });
+  expect(windowCount === 1).toBeTruthy()
+});
 
 test('renders the first page', async () => {
   page = await electronApp.firstWindow()
