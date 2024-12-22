@@ -46,7 +46,7 @@ test("Displays App window", async function () {
   page = await electronApp.firstWindow()
   let windowCount = await electronApp.windows().length;
 
-  expect(windowCount === 1).toBeTruthy()
+  await expect(windowCount === 1).toBeTruthy()
 });
 
 test('renders the first page', async () => {
@@ -59,7 +59,7 @@ test('renders the first page', async () => {
   await expect(page.getByText('esek')).toBeVisible();
   const element = await page.getByText('esek');
   const text = await element.innerText();
-  expect('esek' ).toBe(text);
+  await expect('esek' ).toBe(text);
 })
 
 test("same element listed once if write the clipboard multiple times", async function () {
@@ -83,6 +83,6 @@ test("same element listed once if write the clipboard multiple times", async fun
   const element1 = await page.getByText('💖 pasta1!');
   const value = await element.count()
   const value1 = await element1.count()
-  expect(value).toEqual(1);
-  expect(value1).toEqual(1);
+  await expect(value).toEqual(1);
+  await expect(value1).toEqual(1);
 });
