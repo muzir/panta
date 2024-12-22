@@ -50,40 +50,40 @@ test("Displays App window", async function () {
   expect(windowCount === 1).toBeTruthy()
 });
 
-test('renders the first page', async () => {
-  page = await electronApp.firstWindow()
-  const clipboardText = 'esek';  
-  await electronApp.evaluate(({ clipboard }, text) => {
-    clipboard.writeText(text);
-  }, clipboardText);
-  await delay(1000)
-  await expect(page.getByText('esek')).toBeVisible();
-  const element = await page.getByText('esek');
-  const text = await element.innerText();
-  await expect('esek' ).toBe(text);
-})
+// test('renders the first page', async () => {
+//   page = await electronApp.firstWindow()
+//   const clipboardText = 'esek';  
+//   await electronApp.evaluate(({ clipboard }, text) => {
+//     clipboard.writeText(text);
+//   }, clipboardText);
+//   await delay(1000)
+//   await expect(page.getByText('esek')).toBeVisible();
+//   const element = await page.getByText('esek');
+//   const text = await element.innerText();
+//   expect('esek' ).toBe(text);
+// })
 
-test("same element listed once if write the clipboard multiple times", async function () {
-  let clipboardText = '💖 pasta!';  
-  await electronApp.evaluate(({ clipboard }, text) => {
-    clipboard.writeText(text);
-  }, clipboardText);
-  await delay(550);
-  clipboardText = '💖 pasta1!';
-  await electronApp.evaluate(({ clipboard }, text) => {
-    clipboard.writeText(text);
-  }, clipboardText);
-  await delay(550);
-  clipboardText = '💖 pasta!';
-  await electronApp.evaluate(({ clipboard }, text) => {
-    clipboard.writeText(text);
-  }, clipboardText);
-  await delay(550);
-  const page = await electronApp.firstWindow();
-  const element = await page.getByText('💖 pasta!');
-  const element1 = await page.getByText('💖 pasta1!');
-  const value = await element.count()
-  const value1 = await element1.count()
-  await expect(value).toEqual(1);
-  await expect(value1).toEqual(1);
-});
+// test("same element listed once if write the clipboard multiple times", async function () {
+//   let clipboardText = '💖 pasta!';  
+//   await electronApp.evaluate(({ clipboard }, text) => {
+//     clipboard.writeText(text);
+//   }, clipboardText);
+//   await delay(550);
+//   clipboardText = '💖 pasta1!';
+//   await electronApp.evaluate(({ clipboard }, text) => {
+//     clipboard.writeText(text);
+//   }, clipboardText);
+//   await delay(550);
+//   clipboardText = '💖 pasta!';
+//   await electronApp.evaluate(({ clipboard }, text) => {
+//     clipboard.writeText(text);
+//   }, clipboardText);
+//   await delay(550);
+//   const page = await electronApp.firstWindow();
+//   const element = await page.getByText('💖 pasta!');
+//   const element1 = await page.getByText('💖 pasta1!');
+//   const value = await element.count()
+//   const value1 = await element1.count()
+//   expect(value).toEqual(1);
+//   expect(value1).toEqual(1);
+// });

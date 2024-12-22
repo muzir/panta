@@ -7,7 +7,7 @@ jobs:
     working_directory: ~/repo
     docker:
       - image: cimg/node:23.5.0-browsers
-    resource_class: large
+    resource_class: 2xlarge
     steps:
       - checkout
       - run: node --version
