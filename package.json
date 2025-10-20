@@ -55,10 +55,10 @@
     "sqlite3": "^5.1.7"
   },
   "devDependencies": {
-    "@playwright/test": "^1.49.1",
+    "@playwright/test": "^1.56.1",
     "@types/node": "^22.10.2",
     "electron": "^33.2.0",
     "electron-builder": "^25.1.8",
-    "playwright": "^1.49.0"
+    "playwright": "^1.56.1"
   }
 }
